@@ -10,15 +10,15 @@ export function DashboardPage() {
   return (
     <AppShell title="Dashboard">
       <motion.div
-        className="grid grid-cols-1 gap-4 lg:grid-cols-12"
+        className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:grid-rows-[auto_auto]"
         variants={reducedMotion ? undefined : staggerContainer}
         initial="initial"
         animate="animate"
       >
-        <motion.section className="lg:col-span-4" variants={reducedMotion ? undefined : staggerItem}>
-          <Card variant="glass" className="p-4">
+        <motion.section className="lg:col-span-4 lg:row-start-1" variants={reducedMotion ? undefined : staggerItem}>
+          <Card variant="glass" className="p-4 h-full flex flex-col">
             <div className="text-sm font-semibold text-zinc-700">User & Progress</div>
-            <div className="mt-4 grid grid-cols-1 gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-4 flex-1">
               <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 to-violet-900 p-5 text-white ring-1 ring-white/10 min-h-[168px]">
                 <div className="text-sm opacity-90">Your Robo</div>
                 <div className="mt-1 text-lg font-semibold">Robo</div>
@@ -75,10 +75,10 @@ export function DashboardPage() {
           </Card>
         </motion.section>
 
-        <motion.section className="lg:col-span-4" variants={reducedMotion ? undefined : staggerItem}>
-          <Card variant="glass" className="p-4">
+        <motion.section className="lg:col-span-4 lg:row-start-1" variants={reducedMotion ? undefined : staggerItem}>
+          <Card variant="glass" className="p-4 h-full flex flex-col">
             <div className="text-sm font-semibold text-zinc-700">Daily Goals</div>
-            <div className="mt-4 rounded-2xl bg-white ring-1 ring-zinc-200 overflow-hidden">
+            <div className="mt-4 rounded-2xl bg-white ring-1 ring-zinc-200 overflow-hidden flex-1">
               <div className="flex items-center justify-between gap-3 px-4 pt-4 md:px-5 md:pt-5">
                 <div className="text-xs text-zinc-500">Today</div>
                 <div className="inline-flex shrink-0 rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 ring-1 ring-zinc-200 whitespace-nowrap">
@@ -86,10 +86,10 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              <div className="mt-3 grid grid-cols-1 md:grid-cols-[156px_1fr]">
+              <div className="mt-3 flex flex-col h-full">
                 <div className="px-4 pb-4 md:px-5 md:pb-5">
                   <div className="grid place-items-center">
-                    <ProgressRing value={0.33} size={88} />
+                    <ProgressRing value={0.33} size={92} />
                   </div>
                   <div className="mt-3 text-center">
                     <div className="text-3xl font-semibold text-zinc-900">1/3</div>
@@ -97,28 +97,33 @@ export function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="border-t border-zinc-100 md:border-t-0 md:border-l py-1">
-                  <DailyGoalRow title="Mock Test" subtitle="1/3 challenges completed" points="+15 IQ" />
-                  <Divider />
-                  <DailyGoalRow title="Viva Prep" subtitle="Complete structured answers" points="+15 IQ" />
-                  <Divider />
-                  <DailyGoalRow title="Viva Challenges" subtitle="Practice 5 viva questions" points="+15 IQ" />
+                <div className="border-t border-zinc-100 flex-1 overflow-hidden">
+                  <div className="grid grid-rows-3 h-full divide-y divide-zinc-100">
+                    <div className="flex items-center">
+                      <DailyGoalRow title="Mock Test" subtitle="1/3 challenges completed" points="+15 IQ" />
+                    </div>
+                    <div className="flex items-center">
+                      <DailyGoalRow title="Viva Prep" subtitle="Complete structured answers" points="+15 IQ" />
+                    </div>
+                    <div className="flex items-center">
+                      <DailyGoalRow title="Viva Challenges" subtitle="Practice 5 viva questions" points="+15 IQ" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </Card>
         </motion.section>
 
-        <motion.section className="lg:col-span-4" variants={reducedMotion ? undefined : staggerItem}>
-          <div className="space-y-4">
-            <Card variant="glass" className="p-4">
+        <motion.section className="lg:col-span-4 lg:row-start-1" variants={reducedMotion ? undefined : staggerItem}>
+          <Card variant="glass" className="p-4 h-full flex flex-col">
               <div className="flex items-center justify-between gap-2">
                 <div className="text-sm font-semibold text-zinc-700">This Week’s Leaderboard</div>
                 <div className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 ring-1 ring-zinc-200 shrink-0">
                   This week
                 </div>
               </div>
-              <div className="mt-4 min-h-[188px] flex flex-col">
+              <div className="mt-4 min-h-[188px] flex flex-col flex-1">
                 <MiniAreaChart height={150} points={[42, 44, 55, 58, 74, 70, 76]} />
               </div>
               <div className="mt-3 flex items-center justify-between text-xs text-zinc-500">
@@ -127,25 +132,25 @@ export function DashboardPage() {
                   +2
                 </span>
               </div>
-            </Card>
 
-            <Card variant="glass" className="p-4">
-              <div className="text-sm font-semibold text-zinc-700">Quick Actions</div>
-              <div className="mt-4 grid grid-cols-3 gap-3 items-stretch">
-                <QuickAction label="Book Mock Test" tone="violet" />
-                <QuickAction label="Practice Prep Question" tone="amber" />
-                <QuickAction label="Accept a Viva Challenge" tone="indigo" />
-              </div>
-            </Card>
 
-            <Card variant="glass" className="p-4">
-              <div className="text-sm font-semibold text-zinc-700">Pet Community Highlights</div>
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                <HighlightCard title="High Scores" desc="Community achievements" tone="gold" />
-                <HighlightCard title="Favorite Robo Care" desc="Tips, guides" tone="violet" />
+              <div className="mt-5">
+                <div className="text-sm font-semibold text-zinc-700">Quick Actions</div>
+                <div className="mt-3 grid grid-cols-3 gap-3 items-stretch">
+                  <QuickAction label="Book Mock Test" tone="violet" />
+                  <QuickAction label="Practice Prep Question" tone="amber" />
+                  <QuickAction label="Accept a Viva Challenge" tone="indigo" />
+                </div>
               </div>
-            </Card>
-          </div>
+
+              <div className="mt-5">
+                <div className="text-sm font-semibold text-zinc-700">Pet Community Highlights</div>
+                <div className="mt-3 grid grid-cols-2 gap-4">
+                  <HighlightCard title="High Scores" desc="Community achievements" tone="gold" />
+                  <HighlightCard title="Favorite Robo Care" desc="Tips, guides" tone="violet" />
+                </div>
+              </div>
+          </Card>
         </motion.section>
       </motion.div>
     </AppShell>
@@ -195,13 +200,9 @@ function HighlightCard({
   );
 }
 
-function Divider() {
-  return <div className="h-px bg-zinc-100" aria-hidden />;
-}
-
 function DailyGoalRow({ title, subtitle, points }: { title: string; subtitle: string; points: string }) {
   return (
-    <div className="px-4 py-4 sm:px-5">
+    <div className="px-4 py-3 sm:px-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
           <span
