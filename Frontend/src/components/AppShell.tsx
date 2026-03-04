@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { Button } from "@/components/ui/Button";
 
 type Props = {
   title: string;
@@ -71,12 +70,6 @@ export function AppShell({ title, children }: Props) {
                 );
               })}
             </nav>
-
-            <div className="mt-4">
-              <Button href="/learning" variant="primary" size="md" className="w-full">
-                Start Learning
-              </Button>
-            </div>
           </div>
         </aside>
 
@@ -84,11 +77,6 @@ export function AppShell({ title, children }: Props) {
           <header className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white/70 px-4 py-4 shadow-sm ring-1 ring-zinc-200/80 backdrop-blur-md border border-white/50 sm:px-5">
             <h1 className="text-xl font-semibold sm:text-2xl">{title}</h1>
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden md:block">
-                <div className="flex items-center rounded-full bg-zinc-100 px-3 py-2 ring-1 ring-zinc-200 text-zinc-500 text-sm">
-                  Search
-                </div>
-              </div>
               <Link
                 to="/profile"
                 className="flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-2 ring-1 ring-zinc-200 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 transition-colors"
