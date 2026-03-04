@@ -5,6 +5,18 @@ import { useDeviceTier } from "@/hooks/useDeviceTier";
 import { spring } from "@/lib/motion";
 import { RoboticSceneFallback } from "@/components/hero/RoboticSceneFallback";
 
+// Import new cinematic background components
+import { VideoBackgroundLayer } from "./background/VideoBackgroundLayer";
+import { NeuralNetworkAnimation } from "./background/NeuralNetworkAnimation";
+import { GeometricMotionGraphics } from "./background/GeometricMotionGraphics";
+import { HolographicOverlays } from "./background/HolographicOverlays";
+import { VolumetricLighting } from "./background/VolumetricLighting";
+import { AtmosphericFog } from "./background/AtmosphericFog";
+import { MouseTrackingEffect } from "./background/MouseTrackingEffect";
+import { ScrollParallaxLayers } from "./background/ScrollParallaxLayers";
+import { useBackgroundOptimization } from "./background/LayerManager";
+import "./background/BackgroundAnimations.css";
+
 const RoboticScene = lazy(() => import("@/components/hero/RoboticScene").then((m) => ({ default: m.RoboticScene })));
 
 export type CinematicTheme = "study" | "analytics" | "practice" | "community";
@@ -47,14 +59,14 @@ export function CinematicBackground({
   const renderMode = useMemo(() => {
     if (reducedMotion) return "static" as const;
     if (deviceTier === "low") return "lite" as const;
-    return "full" as const;
+    return "cinematic" as const; // New cinematic mode
   }, [deviceTier, reducedMotion]);
 
-  const allowParallax = renderMode === "full";
-  const allowStreams = renderMode === "full";
+  const allowParallax = renderMode === "cinematic";
+  const allowStreams = renderMode === "cinematic";
   const allowRobots = renderMode !== "static";
-  const allowParticles = renderMode === "full";
-  const allow3d = renderMode === "full" && deviceTier === "high";
+  const allowParticles = renderMode === "cinematic";
+  const allow3d = renderMode === "cinematic" && deviceTier === "high";
 
   const px = useMotionValue(0);
   const py = useMotionValue(0);
@@ -110,7 +122,7 @@ export function CinematicBackground({
     const n = clamp01(neuralActivity);
     const p = clamp01(particleIntensity);
 
-    const perf = renderMode === "full" ? 1 : renderMode === "lite" ? 0.55 : 0;
+    const perf = renderMode === "cinematic" ? 1 : renderMode === "lite" ? 0.55 : 0;
 
     const base = {
       fogOpacity: 0.95,
@@ -137,8 +149,44 @@ export function CinematicBackground({
     return { ...base, timeOverlay, accentDot } as const;
   }, [neuralActivity, particleIntensity, renderMode, robotDensity, theme, timeOfDay]);
 
+  const { shouldReduceEffects, shouldLowerQuality } = useBackgroundOptimization();
+
   return (
     <div ref={rootRef} className={`relative min-h-screen overflow-hidden ${className}`}>
+      {/* Video Background Layer */}
+      {renderMode === "cinematic" && !shouldReduceEffects && (
+        <VideoBackgroundLayer theme={theme} timeOfDay={timeOfDay} />
+      )}
+      
+      {/* Motion Graphics Layer */}
+      {renderMode === "cinematic" && !shouldReduceEffects && (
+        <div className="absolute inset-0">
+          <NeuralNetworkAnimation />
+          <GeometricMotionGraphics />
+          <HolographicOverlays />
+        </div>
+      )}
+      
+      {/* Atmospheric Effects */}
+      <div className="absolute inset-0">
+        <AtmosphericFog density={shouldLowerQuality ? 0.2 : 0.4} timeOfDay={timeOfDay} />
+        <VolumetricLighting intensity={shouldLowerQuality ? 0.3 : 0.6} angle={45} timeOfDay={timeOfDay} />
+        {allowParticles && (
+          <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-70" aria-hidden>
+            <Particles count={scene.particleCount} dotClass={scene.accentDot} />
+          </div>
+        )}
+      </div>
+      
+      {/* Interactive Layer */}
+      {renderMode === "cinematic" && !shouldReduceEffects && (
+        <div className="absolute inset-0">
+          <MouseTrackingEffect />
+          <ScrollParallaxLayers />
+        </div>
+      )}
+      
+      {/* Original Layers (fallback and compatibility) */}
       {/* Layer 1: deep environment base */}
       <div className="absolute inset-0 bg-gradient-to-br from-zinc-50 via-zinc-50 to-violet-100" aria-hidden />
       <div className={`pointer-events-none absolute inset-0 bg-gradient-to-b ${scene.timeOverlay}`} aria-hidden />
