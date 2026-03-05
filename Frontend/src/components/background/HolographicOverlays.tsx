@@ -104,19 +104,20 @@ export const HolographicOverlays: React.FC = () => {
   }, []);
 
   const dataStreams = useMemo(() => {
-    return [
+    // Denser stream network for a premium, enterprise command-center feel.
+    const base: DataStream[] = [
       {
         id: 1,
         startX: 0,
         startY: 0.3,
         endX: 1,
         endY: 0.35,
-        speed: 0.002,
-        color: 'rgba(139, 92, 246, 0.6)',
-        particles: Array.from({ length: 8 }, () => ({
+        speed: 0.0022,
+        color: 'rgba(139, 92, 246, 0.65)',
+        particles: Array.from({ length: 10 }, () => ({
           progress: Math.random(),
-          size: 2 + Math.random() * 3
-        }))
+          size: 1.2 + Math.random() * 2.2,
+        })),
       },
       {
         id: 2,
@@ -124,12 +125,12 @@ export const HolographicOverlays: React.FC = () => {
         startY: 0,
         endX: 0.25,
         endY: 1,
-        speed: 0.0015,
-        color: 'rgba(6, 182, 212, 0.5)',
-        particles: Array.from({ length: 6 }, () => ({
+        speed: 0.0018,
+        color: 'rgba(6, 182, 212, 0.55)',
+        particles: Array.from({ length: 9 }, () => ({
           progress: Math.random(),
-          size: 1 + Math.random() * 2
-        }))
+          size: 1 + Math.random() * 1.8,
+        })),
       },
       {
         id: 3,
@@ -137,14 +138,45 @@ export const HolographicOverlays: React.FC = () => {
         startY: 1,
         endX: 0.75,
         endY: 0,
-        speed: 0.0025,
-        color: 'rgba(251, 191, 36, 0.4)',
-        particles: Array.from({ length: 10 }, () => ({
+        speed: 0.0026,
+        color: 'rgba(251, 191, 36, 0.45)',
+        particles: Array.from({ length: 12 }, () => ({
           progress: Math.random(),
-          size: 1 + Math.random() * 4
-        }))
-      }
-    ] as DataStream[];
+          size: 1 + Math.random() * 2.8,
+        })),
+      },
+    ];
+
+    // Additional diagonal/arc-ish streams
+    const extra: DataStream[] = Array.from({ length: 3 }, (_, i) => {
+      const t = i / 5;
+      const startX = 0.05 + t * 0.9;
+      const startY = 0.12 + (i % 2) * 0.08;
+      const endX = 0.15 + ((i * 17) % 85) / 100;
+      const endY = 0.65 + (i % 3) * 0.08;
+
+      const palette = [
+        'rgba(139, 92, 246, 0.45)',
+        'rgba(6, 182, 212, 0.42)',
+        'rgba(99, 102, 241, 0.38)',
+      ];
+
+      return {
+        id: 10 + i,
+        startX,
+        startY,
+        endX,
+        endY,
+        speed: 0.0014 + i * 0.00022,
+        color: palette[i % palette.length]!,
+        particles: Array.from({ length: 8 + (i % 3) * 2 }, () => ({
+          progress: Math.random(),
+          size: 0.9 + Math.random() * 2.0,
+        })),
+      };
+    });
+
+    return [...base, ...extra] as DataStream[];
   }, []);
 
   useEffect(() => {
@@ -178,10 +210,48 @@ export const HolographicOverlays: React.FC = () => {
       ctx.globalAlpha = panel.opacity;
       ctx.fillRect(x, y, width, height);
 
+      // Subtle inner grid texture
+      ctx.globalAlpha = panel.opacity * 0.25;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 1;
+      const step = 10;
+      for (let gx = x + step; gx < x + width; gx += step) {
+        ctx.beginPath();
+        ctx.moveTo(gx, y);
+        ctx.lineTo(gx, y + height);
+        ctx.stroke();
+      }
+      for (let gy = y + step; gy < y + height; gy += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, gy);
+        ctx.lineTo(x + width, gy);
+        ctx.stroke();
+      }
+
       // Panel border
       ctx.strokeStyle = 'rgba(139, 92, 246, 0.8)';
       ctx.lineWidth = 2;
       ctx.strokeRect(x, y, width, height);
+
+      // Corner brackets
+      ctx.globalAlpha = panel.opacity * 0.9;
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.75)';
+      ctx.lineWidth = 2;
+      const b = Math.min(16, Math.max(10, width * 0.12));
+      ctx.beginPath();
+      ctx.moveTo(x, y + b);
+      ctx.lineTo(x, y);
+      ctx.lineTo(x + b, y);
+      ctx.moveTo(x + width - b, y);
+      ctx.lineTo(x + width, y);
+      ctx.lineTo(x + width, y + b);
+      ctx.moveTo(x + width, y + height - b);
+      ctx.lineTo(x + width, y + height);
+      ctx.lineTo(x + width - b, y + height);
+      ctx.moveTo(x + b, y + height);
+      ctx.lineTo(x, y + height);
+      ctx.lineTo(x, y + height - b);
+      ctx.stroke();
 
       // Scanlines
       const scanlineSpacing = 4;
@@ -196,6 +266,16 @@ export const HolographicOverlays: React.FC = () => {
         ctx.lineTo(x + width, sy);
         ctx.stroke();
       }
+
+      // Sweep highlight
+      const sweep = (Math.sin(time * 0.002 + panel.id) * 0.5 + 0.5) * (width + 80) - 40;
+      ctx.globalAlpha = panel.opacity * 0.22;
+      const sweepGrad = ctx.createLinearGradient(x + sweep - 60, y, x + sweep + 60, y);
+      sweepGrad.addColorStop(0, 'rgba(255,255,255,0)');
+      sweepGrad.addColorStop(0.5, 'rgba(255,255,255,0.65)');
+      sweepGrad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = sweepGrad;
+      ctx.fillRect(x, y, width, height);
 
       // Text content
       ctx.fillStyle = 'rgba(139, 92, 246, 0.9)';

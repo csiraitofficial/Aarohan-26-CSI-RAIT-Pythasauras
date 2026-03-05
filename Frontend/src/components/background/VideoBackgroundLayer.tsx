@@ -3,6 +3,7 @@ import type { CinematicTheme, TimeOfDay } from '../CinematicBackground';
 import { useDeviceTier } from '@/hooks/useDeviceTier';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { getPreferredQuality, pickVideoSources } from './videoAssets';
+import { RealTimeVideoEffects } from './RealTimeVideoEffects';
 
 export interface VideoBackgroundProps {
   theme: CinematicTheme;
@@ -17,6 +18,13 @@ export const VideoBackgroundLayer: React.FC<VideoBackgroundProps> = ({ theme, ti
 
   const quality = useMemo(() => getPreferredQuality(deviceTier), [deviceTier]);
   const sources = useMemo(() => pickVideoSources({ theme, timeOfDay, quality }), [quality, theme, timeOfDay]);
+
+  const effectsQuality = useMemo(() => {
+    if (reducedMotion) return "off" as const;
+    if (deviceTier === "low") return "off" as const;
+    if (deviceTier === "mid") return "off" as const;
+    return "high" as const;
+  }, [deviceTier, reducedMotion]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -36,7 +44,8 @@ export const VideoBackgroundLayer: React.FC<VideoBackgroundProps> = ({ theme, ti
     video.addEventListener('loadedmetadata', resizeCanvas);
     video.addEventListener('play', resizeCanvas);
 
-    if (reducedMotion) return;
+    // When compositor is enabled, we avoid running the legacy overlay loop.
+    if (reducedMotion || effectsQuality !== "off") return;
 
     // Create atmospheric overlay effect (GPU-friendly, low-frequency)
     const drawOverlay = () => {
@@ -133,7 +142,7 @@ export const VideoBackgroundLayer: React.FC<VideoBackgroundProps> = ({ theme, ti
       video.removeEventListener('play', onPlay);
       stop?.();
     };
-  }, [reducedMotion, timeOfDay]);
+  }, [effectsQuality, reducedMotion, timeOfDay]);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -153,6 +162,11 @@ export const VideoBackgroundLayer: React.FC<VideoBackgroundProps> = ({ theme, ti
         {sources.webm != null ? <source src={sources.webm} type="video/webm" /> : null}
         {sources.mp4 != null ? <source src={sources.mp4} type="video/mp4" /> : null}
       </video>
+
+      {/* Real-time video compositor (enterprise-grade post processing) */}
+      {effectsQuality !== "off" ? (
+        <RealTimeVideoEffects videoRef={videoRef} quality={effectsQuality} timeOfDay={timeOfDay} />
+      ) : null}
       
       {/* Canvas overlay for atmospheric effects */}
       <canvas
@@ -160,7 +174,7 @@ export const VideoBackgroundLayer: React.FC<VideoBackgroundProps> = ({ theme, ti
         className="absolute inset-0 w-full h-full"
         style={{ 
           mixBlendMode: 'screen',
-          opacity: 0.6
+          opacity: effectsQuality === "off" ? 0.6 : 0
         }}
       />
       

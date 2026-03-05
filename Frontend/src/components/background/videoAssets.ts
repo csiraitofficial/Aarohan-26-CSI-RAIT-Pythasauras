@@ -112,7 +112,7 @@ export const professionalVideoAssets: ProfessionalVideoAssets = {
 };
 
 export function getPreferredQuality(deviceTier: "low" | "mid" | "high"): VideoQualityTier {
-  if (deviceTier === "high") return "4K";
+  if (deviceTier === "high") return "1080p";
   if (deviceTier === "mid") return "1080p";
   return "720p";
 }
