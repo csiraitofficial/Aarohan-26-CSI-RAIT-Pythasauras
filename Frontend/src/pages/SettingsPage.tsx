@@ -133,6 +133,7 @@ export function SettingsPage() {
 
           <Card variant="glass" className="p-4 sm:p-5">
             <div className="text-sm font-semibold text-zinc-700">Preferences</div>
+            <div className="mt-1 text-xs text-zinc-500">Tune how RoboBuddy feels on your device</div>
             <div className="mt-4 space-y-3">
               <ToggleRow
                 label="Sound effects"
@@ -157,6 +158,7 @@ export function SettingsPage() {
 
           <Card variant="glass" className="p-4 sm:p-5">
             <div className="text-sm font-semibold text-zinc-700">Privacy & Devices</div>
+            <div className="mt-1 text-xs text-zinc-500">Control data sharing and practice hardware behavior</div>
             <div className="mt-4 space-y-3">
               <ToggleRow
                 label="Share analytics"
@@ -199,6 +201,7 @@ export function SettingsPage() {
         <div className="lg:col-span-4 space-y-5">
           <Card variant="glass" className="p-4 sm:p-5">
             <div className="text-sm font-semibold text-zinc-700">Quick Status</div>
+            <div className="mt-1 text-xs text-zinc-500">A snapshot of your current toggles</div>
             <div className="mt-4 grid grid-cols-2 gap-3">
               <Stat label="Camera" value={summary.camera} />
               <Stat label="Analytics" value={summary.privacy} />
@@ -236,13 +239,13 @@ function Field({
   placeholder?: string;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+    <div className="rounded-2xl bg-white/70 p-4 ring-1 ring-zinc-200/80">
       <div className="text-xs font-semibold text-zinc-700">{label}</div>
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="mt-2 w-full rounded-xl bg-zinc-50 px-3 py-2 text-sm ring-1 ring-zinc-200 focus:outline-none"
+        className="mt-2 w-full rounded-xl bg-zinc-50/80 px-3 py-2 text-sm ring-1 ring-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-300/80 focus:border-violet-300/60"
       />
     </div>
   );
@@ -260,7 +263,7 @@ function ToggleRow({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+    <div className="flex items-start justify-between gap-4 rounded-2xl bg-white/70 p-4 ring-1 ring-zinc-200/80">
       <div className="min-w-0">
         <div className="text-sm font-semibold text-zinc-800">{label}</div>
         <div className="mt-1 text-xs text-zinc-500">{desc}</div>
@@ -272,7 +275,7 @@ function ToggleRow({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+    <div className="rounded-2xl bg-white/70 p-4 ring-1 ring-zinc-200/80">
       <div className="text-xs text-zinc-500">{label}</div>
       <div className="mt-1 text-sm font-semibold text-zinc-800">{value}</div>
     </div>

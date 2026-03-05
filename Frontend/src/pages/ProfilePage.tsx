@@ -99,8 +99,8 @@ export function ProfilePage() {
     <AppShell title="Profile">
       <div className="space-y-5">
         {/* Profile header */}
-        <Card variant="glass" className="p-5">
-          <div className="flex items-center gap-5 flex-wrap">
+        <Card variant="glass" className="p-4 sm:p-5">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
             <AvatarUpload
               currentAvatar={avatar}
               initials={initials}
@@ -108,30 +108,43 @@ export function ProfilePage() {
               size="lg"
             />
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-bold text-zinc-900 truncate">{user.firstName} {user.lastName}</h2>
-              <p className="text-sm text-zinc-500">@{user.username}</p>
-              <div className="flex items-center gap-4 mt-1.5 text-xs text-zinc-500">
-                <span>Member since {new Date(user.createdAt).toLocaleDateString()}</span>
-                <span className="text-violet-600 font-semibold">Level {user.level}</span>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="text-xl font-bold text-zinc-900 truncate">{user.firstName} {user.lastName}</h2>
+                  <p className="text-sm text-zinc-500">@{user.username}</p>
+                </div>
+                <div className="shrink-0">
+                  <span className="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-primary/20 whitespace-nowrap">
+                    Level {user.level}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-4">
-              <StatBlock label="Practice Hours" value={user.stats.practiceHours} />
-              <StatBlock label="Achievements" value={user.stats.achievements} />
-              <StatBlock label="Day Streak" value={user.stats.streak} />
+
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-zinc-500">
+                <span>Member since {new Date(user.createdAt).toLocaleDateString()}</span>
+                <span className="h-1 w-1 rounded-full bg-zinc-300" aria-hidden />
+                <span className="text-zinc-600">Keep building your interview IQ</span>
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-3 sm:max-w-md">
+                <StatBlock label="Practice Hours" value={user.stats.practiceHours} />
+                <StatBlock label="Achievements" value={user.stats.achievements} />
+                <StatBlock label="Day Streak" value={user.stats.streak} />
+              </div>
             </div>
           </div>
         </Card>
 
         {/* Tabs */}
         <Card variant="glass" className="overflow-hidden">
-          <div className="flex border-b border-zinc-200/80">
+          <div className="border-b border-zinc-200/80">
+            <div className="flex overflow-x-auto no-scrollbar">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === tab.id
-                    ? "border-violet-600 text-violet-700 bg-violet-50/50"
+                className={`shrink-0 flex items-center gap-2 px-4 sm:px-5 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === tab.id
+                    ? "border-violet-600 text-violet-700 bg-violet-50/70"
                     : "border-transparent text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50/50"
                   }`}
               >
@@ -141,13 +154,19 @@ export function ProfilePage() {
                 {tab.label}
               </button>
             ))}
+            </div>
           </div>
 
           <div className="p-5">
             {/* Save message */}
             {saveMsg && (
-              <div className="mb-4 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-700 font-medium">
-                ✓ {saveMsg}
+              <div className="mb-4 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm text-emerald-700 font-medium">
+                <span className="inline-flex items-center gap-2">
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200" aria-hidden>
+                    ✓
+                  </span>
+                  {saveMsg}
+                </span>
               </div>
             )}
 
@@ -308,9 +327,9 @@ export function ProfilePage() {
 
 function StatBlock({ label, value }: { label: string; value: number }) {
   return (
-    <div className="text-center">
-      <div className="text-xl font-bold text-zinc-900">{value}</div>
-      <div className="text-[10px] text-zinc-500 mt-0.5">{label}</div>
+    <div className="rounded-2xl bg-white/70 px-3 py-2.5 text-center ring-1 ring-zinc-200/80">
+      <div className="text-lg font-bold text-zinc-900 leading-none">{value}</div>
+      <div className="mt-1 text-[10px] font-medium text-zinc-500 leading-none">{label}</div>
     </div>
   );
 }
@@ -321,7 +340,7 @@ function Field({
   label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string; disabled?: boolean;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+    <div className="rounded-2xl bg-white/70 p-4 ring-1 ring-zinc-200/80">
       <div className="text-xs font-semibold text-zinc-700">{label}</div>
       <input
         type={type}
@@ -329,7 +348,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="mt-2 w-full rounded-xl bg-zinc-50 px-3 py-2 text-sm ring-1 ring-zinc-200 focus:outline-none focus:ring-violet-300 disabled:opacity-50"
+        className="mt-2 w-full rounded-xl bg-zinc-50/80 px-3 py-2 text-sm ring-1 ring-zinc-200 focus:outline-none focus:ring-2 focus:ring-violet-300/80 focus:border-violet-300/60 disabled:opacity-50"
       />
     </div>
   );
@@ -347,7 +366,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Toggle({ label, desc, defaultChecked = false }: { label: string; desc: string; defaultChecked?: boolean }) {
   const [checked, setChecked] = useState(defaultChecked);
   return (
-    <div className="flex items-start justify-between gap-4 rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+    <div className="flex items-start justify-between gap-4 rounded-2xl bg-white/70 p-4 ring-1 ring-zinc-200/80">
       <div>
         <div className="text-sm font-semibold text-zinc-800">{label}</div>
         <div className="mt-0.5 text-xs text-zinc-500">{desc}</div>
