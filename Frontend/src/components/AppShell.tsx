@@ -1,18 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-
-function readAuthName() {
-  if (typeof window === "undefined") return null;
-  const v = window.localStorage.getItem("robobuddy.auth");
-  if (!v) return null;
-  try {
-    const parsed = JSON.parse(v) as { name?: string };
-    return typeof parsed.name === "string" && parsed.name.trim() ? parsed.name.trim() : null;
-  } catch {
-    return null;
-  }
-}
+import { useAuth } from "@/contexts/AuthContext";
 
 type Props = {
   title: string;
@@ -32,8 +21,10 @@ const navItems = [
 
 export function AppShell({ title, children }: Props) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
-  const displayName = readAuthName() ?? "Guest";
+  const { user, logout } = useAuth();
+  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() : "Guest";
 
   return (
     <div className="min-h-screen text-zinc-900">
@@ -57,11 +48,10 @@ export function AppShell({ title, children }: Props) {
                   <Link
                     key={it.label}
                     to={it.href}
-                    className={`relative block rounded-xl px-3 py-2.5 text-sm transition-colors duration-normal focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${
-                      isActive
-                        ? "text-zinc-900 font-medium bg-violet-50"
-                        : "text-zinc-700 hover:bg-violet-50/70 hover:text-zinc-900"
-                    }`}
+                    className={`relative block rounded-xl px-3 py-2.5 text-sm transition-colors duration-normal focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${isActive
+                      ? "text-zinc-900 font-medium bg-violet-50"
+                      : "text-zinc-700 hover:bg-violet-50/70 hover:text-zinc-900"
+                      }`}
                     aria-current={isActive ? "page" : undefined}
                   >
                     {isActive && !reducedMotion && (
@@ -94,12 +84,22 @@ export function AppShell({ title, children }: Props) {
                 to="/profile"
                 className="flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-2 ring-1 ring-zinc-200 hover:bg-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 transition-colors"
               >
-                <div className="h-7 w-7 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 shrink-0" />
-                <span className="text-sm font-medium hidden sm:inline">Profile</span>
+                {user?.avatar ? (
+                  <img src={user.avatar} alt="" className="h-7 w-7 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 shrink-0 flex items-center justify-center text-white text-[10px] font-bold">
+                    {user ? `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase() : "?"}
+                  </div>
+                )}
+                <span className="text-sm font-medium hidden sm:inline">{displayName}</span>
               </Link>
-              <div className="rounded-full bg-zinc-100 px-3 py-2 text-sm font-medium ring-1 ring-zinc-200">
-                10/100
-              </div>
+              <button
+                onClick={async () => { await logout(); navigate("/login"); }}
+                className="rounded-full bg-zinc-100 px-3 py-2 text-sm font-medium ring-1 ring-zinc-200 hover:bg-red-50 hover:text-red-600 hover:ring-red-200 transition-colors"
+                aria-label="Sign out"
+              >
+                Sign out
+              </button>
             </div>
           </header>
 
