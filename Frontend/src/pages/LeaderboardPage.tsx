@@ -1,23 +1,73 @@
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { useMemo, useState } from "react";
 
 export function LeaderboardPage() {
+  const [showAll, setShowAll] = useState(false);
   const leaderboardData = [
-    { name: "Rayna", score: 10000, streak: 15, trend: "up", avatar: "🌟", level: "Gold" },
-    { name: "Neon", score: 9200, streak: 12, trend: "up", avatar: "⭐", level: "Gold" },
-    { name: "Brimstone", score: 8400, streak: 8, trend: "down", avatar: "💫", level: "Silver" },
-    { name: "Sage", score: 7600, streak: 10, trend: "up", avatar: "✨", level: "Silver" },
-    { name: "Phoenix", score: 6800, streak: 5, trend: "same", avatar: "🎯", level: "Bronze" },
-    { name: "Viv", score: 6200, streak: 7, trend: "up", avatar: "🎨", level: "Bronze" },
-    { name: "Echo", score: 5800, streak: 4, trend: "down", avatar: "🎭", level: "Bronze" },
-    { name: "Nova", score: 5100, streak: 6, trend: "up", avatar: "🎪", level: "Bronze" },
+    { name: "Reyna", score: 10000, streak: 15, trend: "up", avatar: "🌟", level: "Ascendant" },
+    { name: "Neon", score: 9200, streak: 12, trend: "up", avatar: "⭐", level: "Ascendant" },
+    { name: "Omen", score: 8400, streak: 8, trend: "down", avatar: "💫", level: "Diamond" },
+    { name: "Sage", score: 7600, streak: 10, trend: "up", avatar: "✨", level: "Platinum" },
+    { name: "Phoenix", score: 6800, streak: 5, trend: "same", avatar: "🎯", level: "Gold" },
+    { name: "Tejo", score: 6200, streak: 7, trend: "up", avatar: "🎨", level: "Gold" },
+    { name: "Raze", score: 5700, streak: 4, trend: "down", avatar: "🎭", level: "Silver" },
+    { name: "Jett", score: 5100, streak: 6, trend: "up", avatar: "🎪", level: "Silver" },
+    { name: "Cypher", score: 5000, streak: 3, trend: "up", avatar: "🕶️", level: "Bronze" },
+    { name: "Viper", score: 4800, streak: 3, trend: "up", avatar: "🐍", level: "Bronze" },
+    { name: "Yoru", score: 3900, streak: 2, trend: "same", avatar: "🌀", level: "Iron" },
   ] as const;
 
-  const getRankStyle = (rank: number) => {
+  type Tier = (typeof leaderboardData)[number]["level"];
+
+  const visibleLeaderboard = useMemo(() => {
+    const previewCount = 5;
+    return showAll ? leaderboardData : leaderboardData.slice(0, previewCount);
+  }, [leaderboardData, showAll]);
+
+  const getTierBadgeStyle = (tier: Tier) => {
+    if (tier === "Ascendant") return "bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200";
+    if (tier === "Diamond") return "bg-purple-100 text-purple-700 ring-1 ring-purple-200";
+    if (tier === "Platinum") return "bg-sky-100 text-sky-700 ring-1 ring-sky-200";
+    if (tier === "Gold") return "bg-amber-100 text-amber-700 ring-1 ring-amber-200";
+    if (tier === "Silver") return "bg-zinc-100 text-zinc-700 ring-1 ring-zinc-200";
+    if (tier === "Bronze") return "bg-orange-100 text-orange-700 ring-1 ring-orange-200";
+    return "bg-slate-100 text-slate-700 ring-1 ring-slate-200";
+  };
+
+  const getTierRowStyle = (tier: Tier, rank: number) => {
+    if (rank <= 3) return "bg-gradient-to-r from-violet-50 to-white ring-1 ring-primary/20";
+    if (tier === "Ascendant") return "bg-gradient-to-r from-emerald-50 to-white ring-1 ring-emerald-200";
+    if (tier === "Diamond") return "bg-gradient-to-r from-purple-50 to-white ring-1 ring-purple-200";
+    if (tier === "Platinum") return "bg-gradient-to-r from-sky-50 to-white ring-1 ring-sky-200";
+    if (tier === "Gold") return "bg-gradient-to-r from-amber-50 to-white ring-1 ring-amber-200";
+    if (tier === "Silver") return "bg-gradient-to-r from-zinc-50 to-white ring-1 ring-zinc-200";
+    if (tier === "Bronze") return "bg-gradient-to-r from-orange-50 to-white ring-1 ring-orange-200";
+    return "bg-gradient-to-r from-slate-50 to-white ring-1 ring-slate-200";
+  };
+
+  const getTierAvatarRing = (tier: Tier) => {
+    if (tier === "Ascendant") return "ring-emerald-200 bg-emerald-50";
+    if (tier === "Diamond") return "ring-purple-200 bg-purple-50";
+    if (tier === "Platinum") return "ring-sky-200 bg-sky-50";
+    if (tier === "Gold") return "ring-amber-200 bg-amber-50";
+    if (tier === "Silver") return "ring-zinc-200 bg-zinc-50";
+    if (tier === "Bronze") return "ring-orange-200 bg-orange-50";
+    return "ring-slate-200 bg-slate-50";
+  };
+
+  const getRankStyle = (rank: number, tier: Tier) => {
     if (rank === 1) return "bg-gradient-to-br from-yellow-400 to-amber-500 text-white shadow-lg shadow-amber-200";
     if (rank === 2) return "bg-gradient-to-br from-zinc-300 to-zinc-400 text-white shadow-lg shadow-zinc-200";
     if (rank === 3) return "bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-200";
-    return "bg-violet-50 text-violet-700 ring-1 ring-primary/20";
+    if (tier === "Ascendant") return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200";
+    if (tier === "Diamond") return "bg-purple-50 text-purple-700 ring-1 ring-purple-200";
+    if (tier === "Platinum") return "bg-sky-50 text-sky-700 ring-1 ring-sky-200";
+    if (tier === "Gold") return "bg-amber-50 text-amber-700 ring-1 ring-amber-200";
+    if (tier === "Silver") return "bg-zinc-50 text-zinc-700 ring-1 ring-zinc-200";
+    if (tier === "Bronze") return "bg-orange-50 text-orange-700 ring-1 ring-orange-200";
+    return "bg-slate-50 text-slate-700 ring-1 ring-slate-200";
   };
 
   const getTrendIcon = (trend: "up" | "down" | "same") => {
@@ -86,41 +136,47 @@ export function LeaderboardPage() {
         </div>
 
         <Card variant="glass" className="overflow-hidden bg-white p-0">
-          <div className="bg-gradient-to-r from-violet-100 to-violet-50 p-5 border-b border-violet-100">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold text-violet-950">Today's Rankings</span>
-                <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                  UPDATING
-                </span>
-              </div>
+            <div className="bg-gradient-to-r from-violet-100 to-violet-50 p-5 border-b border-violet-100">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold text-violet-950">Today's Rankings</span>
+                  <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                    UPDATING
+                  </span>
+                </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-violet-700">Sort by:</span>
-                <select className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-violet-700 ring-1 ring-primary/20 focus:outline-none">
-                  <option>This Week</option>
-                  <option>Last Week</option>
-                  <option>This Month</option>
-                </select>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-violet-700">Sort by:</span>
+                  <select className="rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-violet-700 ring-1 ring-primary/20 focus:outline-none">
+                    <option>This Week</option>
+                    <option>Last Week</option>
+                    <option>This Month</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
           <div className="p-5 space-y-2 max-h-[520px] overflow-y-auto">
-            {leaderboardData.map((player, i) => (
+            {visibleLeaderboard.map((player, i) => (
               <div
                 key={player.name}
-                className={`group relative flex items-center justify-between rounded-xl p-3 transition-all duration-200 hover:shadow-md ${
-                  i < 3 ? "bg-gradient-to-r from-violet-50 to-white ring-1 ring-primary/20" : "hover:bg-zinc-50"
-                }`}
+                className={`group relative flex items-center justify-between rounded-xl p-3 transition-all duration-200 hover:shadow-md ${getTierRowStyle(
+                  player.level,
+                  i + 1,
+                )}`}
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium ${getRankStyle(i + 1)}`}>
+                  <div
+                    className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium ${getRankStyle(i + 1, player.level)}`}
+                  >
                     {i + 1}
                   </div>
 
-                  <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-lg" aria-hidden>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-lg ring-1 ${getTierAvatarRing(player.level)}`}
+                    aria-hidden
+                  >
                     {player.avatar}
                   </div>
 
@@ -128,13 +184,7 @@ export function LeaderboardPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-zinc-900 truncate">{player.name}</span>
                       <span
-                        className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
-                          player.level === "Gold"
-                            ? "bg-amber-100 text-amber-700"
-                            : player.level === "Silver"
-                              ? "bg-zinc-100 text-zinc-700"
-                              : "bg-orange-100 text-orange-700"
-                        }`}
+                        className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${getTierBadgeStyle(player.level)}`}
                       >
                         {player.level}
                       </span>
@@ -166,10 +216,14 @@ export function LeaderboardPage() {
           </div>
 
           <div className="border-t border-zinc-100 p-4">
-            <button className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-violet-700 py-2.5 text-sm font-medium text-white transition-all hover:from-violet-700 hover:to-violet-800 hover:shadow-md flex items-center justify-center gap-2">
-              <span>View Full Leaderboard</span>
-              <span aria-hidden>→</span>
-            </button>
+            <Button
+              variant="primary"
+              className="w-full justify-center"
+              onClick={() => setShowAll((s) => !s)}
+            >
+              <span>{showAll ? "Show Less" : "View Full Leaderboard"}</span>
+              <span aria-hidden>{showAll ? "↑" : "→"}</span>
+            </Button>
           </div>
         </Card>
       </div>
