@@ -25,6 +25,7 @@ export function AppShell({ title, children }: Props) {
   const reducedMotion = useReducedMotion();
   const { user, logout } = useAuth();
   const displayName = user ? `${user.firstName} ${user.lastName}`.trim() : "Guest";
+  const aiCoachAvatarSrc = "/Assets/Robo/Ai.png";
 
   return (
     <div className="min-h-screen text-zinc-900">
@@ -32,8 +33,8 @@ export function AppShell({ title, children }: Props) {
         <aside className="w-56 shrink-0 lg:w-64">
           <div className="sticky top-6 rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-zinc-200/80 backdrop-blur-md border border-white/50">
             <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-glow-sm">
-                AI
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-glow-sm overflow-hidden ring-1 ring-white/40">
+                <img src={aiCoachAvatarSrc} alt="" className="h-full w-full object-cover" decoding="async" />
               </div>
               <div className="min-w-0 leading-tight">
                 <div className="text-sm font-semibold truncate">Interview Coach</div>

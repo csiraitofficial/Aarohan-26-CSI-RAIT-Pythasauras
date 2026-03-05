@@ -1,11 +1,38 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/Card";
 import { staggerContainer, staggerItem } from "@/lib/motion";
 
+const dashboardImages = {
+  roboCompanion: {
+    src: "/Assets/Robo/Decent.png",
+    alt: "RoboBuddy Dashboard Companion",
+    sizes: "(max-width: 768px) 100vw, 50vw",
+    loading: "eager" as const,
+  },
+};
+
+function OptimizedImage({
+  src,
+  alt,
+  className,
+  sizes,
+  loading = "lazy",
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  sizes?: string;
+  loading?: "lazy" | "eager";
+}) {
+  return <img src={src} alt={alt} className={className} sizes={sizes} loading={loading} decoding="async" />;
+}
+
 export function DashboardPage() {
   const reducedMotion = useReducedMotion();
+  useEffect(() => {}, []);
 
   return (
     <AppShell title="Dashboard">
@@ -20,24 +47,62 @@ export function DashboardPage() {
             <div className="text-sm font-semibold text-zinc-700">User & Progress</div>
             <div className="mt-4 grid grid-cols-1 gap-4 flex-1">
               <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 to-violet-900 p-5 text-white ring-1 ring-white/10 min-h-[168px]">
-                <div className="text-sm opacity-90">Your Robo</div>
-                <div className="mt-1 text-lg font-semibold">Robo</div>
-                <div className="mt-4 flex items-end justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10 ring-1 ring-white/15">
-                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-violet-400 to-indigo-300 ring-1 ring-white/20" />
-                    </div>
-                    <div className="leading-tight">
-                      <div className="text-xs opacity-80">User IQ</div>
-                      <div className="text-2xl font-bold">190</div>
-                    </div>
+                <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10 blur-2xl" aria-hidden />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-violet-600/10 via-purple-600/10 to-indigo-600/10" aria-hidden />
+
+                <div className="relative flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="text-sm opacity-90">Your Robo:</div>
+                    <div className="mt-1 text-lg font-semibold">Robo</div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs opacity-80">Next level</div>
-                    <div className="rounded-full bg-white/10 px-3 py-1 text-xs inline-block">Beginner</div>
+
+                  <div className="shrink-0">
+                    <div className="rounded-2xl bg-white/10 ring-1 ring-white/15 p-2">
+                      <motion.div
+                        initial={reducedMotion ? false : { opacity: 0, y: 6 }}
+                        animate={reducedMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35 }}
+                        className="h-20 w-20 sm:h-24 sm:w-24"
+                      >
+                        <OptimizedImage
+                          src={dashboardImages.roboCompanion.src}
+                          alt={dashboardImages.roboCompanion.alt}
+                          sizes={dashboardImages.roboCompanion.sizes}
+                          loading={dashboardImages.roboCompanion.loading}
+                          className="h-full w-full object-contain drop-shadow-2xl"
+                        />
+                      </motion.div>
+                    </div>
                   </div>
                 </div>
-                <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10 blur-2xl" aria-hidden />
+
+                <div className="relative mt-4 flex items-end justify-between gap-4">
+                  <div className="shrink-0">
+                    <div className="relative grid place-items-center rounded-full bg-white/10 ring-1 ring-white/15" style={{ width: 54, height: 54 }}>
+                      <div className="absolute inset-0 rounded-full" style={{ boxShadow: "inset 0 0 0 3px rgba(245, 158, 11, 0.65)" }} aria-hidden />
+                      <div className="text-lg font-bold">190</div>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 text-center">
+                    <div className="text-xs opacity-80">User IQ</div>
+                    <div className="mt-1 text-xs opacity-80">to next level</div>
+                  </div>
+
+                  <div className="shrink-0 text-right">
+                    <div className="inline-flex items-center gap-2">
+                      <div className="grid h-9 w-9 place-items-center rounded-full bg-white/10 ring-1 ring-white/15">
+                        <span className="text-amber-300 text-base" aria-hidden>
+                          ★
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-xs opacity-80">Level</div>
+                        <div className="text-sm font-semibold">Beginner</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200 min-h-[188px] flex flex-col">
@@ -98,7 +163,7 @@ export function DashboardPage() {
                 </div>
 
                 <div className="border-t border-zinc-100 flex-1 overflow-hidden">
-                  <div className="grid grid-rows-3 h-full divide-y divide-zinc-100">
+                  <div className="grid grid-rows-5 h-full divide-y divide-zinc-100">
                     <div className="flex items-center">
                       <DailyGoalRow title="Mock Test" subtitle="1/3 challenges completed" points="+15 IQ" />
                     </div>
@@ -107,6 +172,12 @@ export function DashboardPage() {
                     </div>
                     <div className="flex items-center">
                       <DailyGoalRow title="Viva Challenges" subtitle="Practice 5 viva questions" points="+15 IQ" />
+                    </div>
+                    <div className="flex items-center">
+                      <DailyGoalRow title="Quick Revision" subtitle="Review key concepts" points="+15 IQ" />
+                    </div>
+                    <div className="flex items-center">
+                      <DailyGoalRow title="AI Feedback" subtitle="Analyze last session" points="+15 IQ" />
                     </div>
                   </div>
                 </div>
@@ -215,7 +286,7 @@ function DailyGoalRow({ title, subtitle, points }: { title: string; subtitle: st
           </div>
         </div>
 
-        <div className="shrink-0 rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-primary/20 whitespace-nowrap">
+        <div className="shrink-0 min-w-[72px] text-right rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-primary/20 whitespace-nowrap">
           {points}
         </div>
       </div>
