@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CameraFeed } from "@/components/CameraFeed";
 import { FocusMeter } from "@/components/FocusMeter";
+import { SectionTranscript } from "@/components/SectionTranscript";
 import { useSpeechWebSocket } from "@/lib/useSpeechWebSocket";
 import { getTopic, type TopicCategory } from "@/pages/practice/practiceCatalog";
 
@@ -54,9 +55,7 @@ export function ActivePracticeSession() {
   const { sessionId = "" } = useParams();
 
   const [focusPercent, setFocusPercent] = useState(0);
-  const { status, start, stop } = useSpeechWebSocket();
-
-  const running = status === "running";
+  const { start, stop } = useSpeechWebSocket();
 
   const session = useMemo(() => {
     if (!sessionId) return null;
@@ -67,6 +66,32 @@ export function ActivePracticeSession() {
     if (!session) return null;
     return getTopic(session.category, session.topic);
   }, [session]);
+
+  const [questionDb, setQuestionDb] = useState<Record<string, Record<string, string[]>> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/questionDatabase.json")
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        setQuestionDb(data as Record<string, Record<string, string[]>>);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setQuestionDb(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const questions = useMemo(() => {
+    if (!session || !questionDb) return [] as string[];
+    const byCategory = questionDb[session.category];
+    if (!byCategory) return [] as string[];
+    return byCategory[session.topic] ?? [];
+  }, [questionDb, session]);
 
   const onFocus = useCallback((p: number) => {
     setFocusPercent(p);
@@ -126,6 +151,7 @@ export function ActivePracticeSession() {
         </div>
         <div className="space-y-5 lg:col-span-7">
           <FocusMeter value={focusPercent} />
+          <SectionTranscript questions={questions} />
         </div>
       </div>
     </AppShell>

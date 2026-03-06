@@ -1,0 +1,132 @@
+{
+  "job-interview": {
+    "software-engineer": [
+      "Walk me through a recent project you built end-to-end. What trade-offs did you make?",
+      "Explain the difference between a process and a thread. When would you choose each?",
+      "How would you design a URL shortener? Talk about data model, scale, and failure modes.",
+      "Describe a performance issue you debugged. What metrics did you use and what was the root cause?",
+      "What is your approach to writing maintainable code in a large codebase?"
+    ],
+    "web-developer": [
+      "What happens when you type a URL in the browser and press Enter?",
+      "How do you manage state in a React application and when do you choose each approach?",
+      "Explain CORS and how you would debug a CORS issue.",
+      "How would you design an authentication flow for a SPA with a backend API?",
+      "Tell me about a time you improved page performance. What did you change?"
+    ],
+    "ui-ux-designer": [
+      "Walk me through your design process from discovery to handoff.",
+      "How do you validate design decisions with users and stakeholders?",
+      "Explain a design system you’ve contributed to. What components/tokens did it include?",
+      "How do you handle conflicting feedback from different stakeholders?",
+      "Describe a UX problem you identified using data. What did you change?"
+    ],
+    "app-developer": [
+      "How do you approach offline-first behavior in a mobile app?",
+      "Explain your strategy for handling push notifications end-to-end.",
+      "How do you optimize app startup time and reduce perceived latency?",
+      "Describe how you handle different screen sizes, accessibility, and platform conventions.",
+      "Tell me about a tricky bug you solved on mobile. How did you reproduce it?"
+    ],
+    "devops-engineer": [
+      "Explain a CI/CD pipeline you designed. What were the key stages and why?",
+      "How do you monitor a production system and define useful alerts?",
+      "What is Infrastructure as Code and how do you manage drift?",
+      "Walk through how you would handle a production incident (on-call scenario).",
+      "How do you secure secrets across environments and deployments?"
+    ],
+    "data-scientist": [
+      "Describe a machine learning project you shipped. How did you measure success?",
+      "How do you handle missing data and outliers during preprocessing?",
+      "Explain overfitting and the techniques you use to prevent it.",
+      "How do you communicate results to non-technical stakeholders?",
+      "Tell me about a time a model performed poorly in production. What did you do?"
+    ],
+    "product-manager": [
+      "How do you decide what to build next when you have competing priorities?",
+      "Describe how you write user stories and define acceptance criteria.",
+      "How do you measure product success and choose metrics that matter?",
+      "Tell me about a product decision you reversed after learning new information.",
+      "How do you align engineering, design, and business stakeholders?"
+    ],
+    "marketing-specialist": [
+      "How do you plan and evaluate a marketing campaign end-to-end?",
+      "What metrics do you track for performance marketing and why?",
+      "How do you define and test messaging and positioning?",
+      "Describe a time you improved conversion rate. What experiments did you run?",
+      "How do you segment audiences and personalize communication?"
+    ],
+    "hr-recruiter": [
+      "Walk me through how you screen candidates for both skills and culture add.",
+      "How do you structure behavioral interviews to reduce bias?",
+      "Describe how you work with hiring managers to define a strong role profile.",
+      "How do you handle a candidate who negotiates aggressively?",
+      "Tell me about a difficult hiring decision you had to make and how you made it."
+    ]
+  },
+  "skill-development": {
+    "behavioral-upskilling": [
+      "Describe a time you received critical feedback. What did you do next?",
+      "Tell me about a conflict with a teammate and how you resolved it.",
+      "How do you handle working with someone who has a very different style than you?",
+      "Describe a time you made a mistake at work. How did you communicate it?",
+      "How do you prioritize tasks when everything feels urgent?"
+    ],
+    "presentation-skills": [
+      "Explain a complex topic in 60 seconds to a non-technical audience.",
+      "How do you structure a presentation to keep an audience engaged?",
+      "What techniques do you use to manage nervousness on stage?",
+      "How do you handle tough questions during Q&A?",
+      "Describe how you would improve a slide deck that is too text-heavy."
+    ],
+    "communication-boost": [
+      "What does active listening mean to you and how do you practice it?",
+      "Describe a time you had to communicate bad news. How did you do it?",
+      "How do you adapt your communication style for different stakeholders?",
+      "Give an example of how you clarified ambiguity in requirements.",
+      "How do you make sure your message is understood (not just delivered)?"
+    ],
+    "leadership-skills": [
+      "Describe a time you influenced without authority.",
+      "How do you motivate a team when morale is low?",
+      "What is your approach to delegation and accountability?",
+      "Tell me about a time you had to make a decision with incomplete information.",
+      "How do you handle underperformance on your team?"
+    ],
+    "negotiation-skills": [
+      "Describe a negotiation you led. What was your strategy and outcome?",
+      "How do you define your BATNA and use it in negotiation?",
+      "How do you handle a counterpart who uses pressure tactics?",
+      "Walk me through how you negotiate scope or timelines with stakeholders.",
+      "What does a win-win outcome look like in practice?"
+    ],
+    "time-management": [
+      "How do you plan your week to balance deep work and meetings?",
+      "What system do you use to track tasks and priorities?",
+      "Tell me about a time you missed a deadline. What did you learn?",
+      "How do you avoid context switching and regain focus quickly?",
+      "How do you estimate work when requirements are uncertain?"
+    ],
+    "stress-management": [
+      "What are your early signs of stress and how do you respond?",
+      "Describe a high-pressure situation and how you stayed effective.",
+      "How do you set boundaries to prevent burnout?",
+      "What routines help you recover after intense work periods?",
+      "How do you approach problems when you feel overwhelmed?"
+    ],
+    "networking-skills": [
+      "How do you introduce yourself in a professional setting in 30 seconds?",
+      "Describe how you maintain relationships over time, not just when you need something.",
+      "How do you approach reaching out to someone you admire professionally?",
+      "Tell me about a time networking helped you solve a problem or find an opportunity.",
+      "How do you provide value to your network proactively?"
+    ],
+    "critical-thinking": [
+      "Describe how you break down a vague problem into actionable steps.",
+      "Tell me about a time you challenged an assumption and it changed the outcome.",
+      "How do you evaluate trade-offs when there is no perfect solution?",
+      "Walk through how you would analyze a new idea before committing resources.",
+      "How do you separate signal from noise when reviewing information quickly?"
+    ]
+  }
+}
