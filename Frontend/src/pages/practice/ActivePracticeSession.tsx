@@ -136,19 +136,6 @@ export function ActivePracticeSession() {
     return byCategory[session.topic] ?? [];
   }, [questionDb, session]);
 
-  const handleNextQuestion = useCallback(() => {
-    if (!sessionId) return;
-    
-    const updatedIQ = {
-      ...sessionIQ,
-      questionsAnswered: sessionIQ.questionsAnswered + 1,
-      // Don't override timeSpent - it's already being updated continuously
-    };
-    
-    setSessionIQ(updatedIQ);
-    writeSessionIQ(sessionId, updatedIQ);
-  }, [sessionId, sessionIQ]);
-
   const onFocus = useCallback((p: number) => {
     setFocusPercent(p);
   }, []);
@@ -212,7 +199,7 @@ export function ActivePracticeSession() {
         </div>
         <div className="space-y-5 lg:col-span-7">
           <FocusMeter value={focusPercent} />
-          <SectionTranscript questions={questions} onNextQuestion={handleNextQuestion} />
+          <SectionTranscript questions={questions} />
         </div>
       </div>
     </AppShell>

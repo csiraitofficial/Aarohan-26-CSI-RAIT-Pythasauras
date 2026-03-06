@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -6,12 +6,82 @@ from typing import List, Dict, Optional
 import io
 import json
 import asyncio
-from elevenlabs import generate, Voice, set_api_key
+import whisper
+import tempfile
 import os
+import ffmpeg
+from elevenlabs import generate, Voice, set_api_key
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Load questions from JSON file
+def load_questions_database():
+    try:
+        with open('questionDatabase.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("Warning: questionDatabase.json not found, using default questions")
+        return {
+            "job-interview": {
+                "software-engineer": ["Default question 1", "Default question 2"]
+            },
+            "skill-development": {
+                "presentation-skills": ["Default question 1", "Default question 2"]
+            }
+        }
+
+QUESTIONS_DATABASE = load_questions_database()
+
+def convert_webm_to_wav(webm_path: str, wav_path: str) -> bool:
+    """Convert WebM to WAV using ffmpeg"""
+    try:
+        # Check if ffmpeg is available
+        import subprocess
+        subprocess.run(['ffmpeg', '-version'], capture_output=True, check=True)
+        
+        (
+            ffmpeg
+            .input(webm_path)
+            .output(wav_path, acodec='pcm_s16le', ac=1, ar='16000')
+            .overwrite_output()
+            .run(capture_stdout=True, capture_stderr=True)
+        )
+        return True
+    except (ffmpeg.Error, subprocess.CalledProcessError, FileNotFoundError) as e:
+        print(f"FFmpeg conversion error: {e}")
+        return False
+
+def process_audio_with_whisper(audio_path: str, language: str = "en"):
+    """Process audio with Whisper with error handling"""
+    try:
+        result = whisper_model.transcribe(
+            audio_path, 
+            language=language if language != "auto" else None,
+            fp16=False,
+            verbose=False  # Reduce verbosity
+        )
+        return result
+    except Exception as e:
+        print(f"Whisper transcription error: {e}")
+        # Try with different parameters as fallback
+        try:
+            result = whisper_model.transcribe(
+                audio_path, 
+                language=None,  # Auto-detect language
+                fp16=False,
+                verbose=False
+            )
+            return result
+        except Exception as e2:
+            print(f"Whisper fallback also failed: {e2}")
+            raise e2
+
+# Initialize Whisper model
+print("Loading Whisper model...")
+whisper_model = whisper.load_model("small")
+print("Whisper model loaded successfully!")
 
 app = FastAPI(title="RoboBuddy API", version="1.0.0")
 
@@ -38,117 +108,22 @@ if not ELEVENLABS_API_KEY:
 else:
     set_api_key(ELEVENLABS_API_KEY)
 
-# Sample question database
-QUESTIONS_DATABASE = {
-    "job-interview": {
-        "software-engineer": [
-            "Can you explain the difference between REST and GraphQL?",
-            "How would you design a URL shortener service?",
-            "What is the time complexity of binary search and why?",
-            "Describe the difference between SQL and NoSQL databases.",
-            "How do you handle concurrency in distributed systems?",
-            "What is the difference between authentication and authorization?",
-            "Can you explain what a microservices architecture is?",
-            "How would you optimize a slow database query?",
-            "What is the difference between synchronous and asynchronous programming?",
-            "Describe the CAP theorem in distributed systems."
-        ],
-        "web-developer": [
-            "What is the difference between let, const, and var in JavaScript?",
-            "How does the CSS box model work?",
-            "What are React hooks and why are they useful?",
-            "Explain the concept of CORS and how to handle it.",
-            "What is the difference between GET and POST requests?",
-            "How do you optimize website performance?",
-            "What is the difference between client-side and server-side rendering?",
-            "Explain the concept of responsive web design.",
-            "What are websockets and when would you use them?",
-            "How do you handle state management in React applications?"
-        ],
-        "ui-ux-designer": [
-            "What are the principles of good visual design?",
-            "How do you conduct user research effectively?",
-            "What is the difference between UX and UI design?",
-            "How do you create an effective design system?",
-            "What are accessibility guidelines and why are they important?",
-            "How do you approach user journey mapping?",
-            "What is the role of prototyping in design?",
-            "How do you conduct usability testing?",
-            "What are common design patterns in mobile apps?",
-            "How do you balance aesthetics with functionality?"
-        ],
-        "data-scientist": [
-            "What is the difference between supervised and unsupervised learning?",
-            "How do you handle missing data in a dataset?",
-            "Explain the bias-variance tradeoff in machine learning.",
-            "What is cross-validation and why is it important?",
-            "How do you evaluate the performance of a classification model?",
-            "What is the difference between precision and recall?",
-            "How do you handle imbalanced datasets?",
-            "What is feature engineering and why is it important?",
-            "Explain the concept of regularization in machine learning.",
-            "How do you prevent overfitting in neural networks?"
-        ]
-    },
-    "skill-development": {
-        "presentation-skills": [
-            "How do you structure an effective presentation?",
-            "What techniques can you use to engage your audience?",
-            "How do you handle presentation anxiety?",
-            "What are the key elements of a good slide design?",
-            "How do you prepare for a Q&A session after your presentation?",
-            "What body language techniques improve public speaking?",
-            "How do you tailor your presentation to different audiences?",
-            "What storytelling techniques can enhance your presentation?",
-            "How do you effectively use visual aids in presentations?",
-            "What strategies help you remember key points during a presentation?"
-        ],
-        "communication-boost": [
-            "How do you practice active listening in professional settings?",
-            "What are the key elements of effective business communication?",
-            "How do you give and receive constructive feedback?",
-            "What non-verbal communication cues should you be aware of?",
-            "How do you adapt your communication style to different personalities?",
-            "What techniques help you communicate complex ideas clearly?",
-            "How do you handle difficult conversations at work?",
-            "What role does empathy play in effective communication?",
-            "How do you improve your written communication skills?",
-            "What strategies help you communicate in cross-cultural environments?"
-        ],
-        "leadership-skills": [
-            "What are the key qualities of an effective leader?",
-            "How do you motivate team members during challenging projects?",
-            "What strategies help you delegate tasks effectively?",
-            "How do you handle conflicts within your team?",
-            "What is the difference between managing and leading?",
-            "How do you develop a strategic vision for your team?",
-            "What techniques help you build trust with team members?",
-            "How do you provide effective performance feedback?",
-            "What approaches help you make difficult decisions?",
-            "How do you foster innovation and creativity in your team?"
-        ],
-        "negotiation-skills": [
-            "What are the key principles of effective negotiation?",
-            "How do you prepare for a successful negotiation?",
-            "What techniques help you understand the other party's interests?",
-            "How do you handle objections during negotiations?",
-            "What strategies help you create win-win outcomes?",
-            "How do you negotiate salary and benefits effectively?",
-            "What role does timing play in negotiations?",
-            "How do you maintain relationships while negotiating firmly?",
-            "What techniques help you overcome negotiation anxiety?",
-            "How do you know when to walk away from a negotiation?"
-        ]
-    }
-}
-
 class TTSRequest(BaseModel):
     text: str
-    voice_id: Optional[str] = "21m00Tcm4TlvDq8ikWAM"  # Default to "Adam" voice
+    voice_id: Optional[str] = "pNInz6obpgDQGcFmaJgB"  # Default to "Adam" voice (updated ID)
 
 class QuestionRequest(BaseModel):
     category: str
     section_id: str
+
+class STTRequest(BaseModel):
+    model: Optional[str] = "base"
+    language: Optional[str] = "en"
+    
+class TranscriptionResponse(BaseModel):
+    text: str
+    language: str
+    duration: float
 
 @app.get("/")
 async def root():
@@ -156,7 +131,7 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "elevenlabs_configured": bool(ELEVENLABS_API_KEY)}
+    return {"status": "healthy", "elevenlabs_configured": bool(ELEVENLABS_API_KEY), "whisper_loaded": whisper_model is not None}
 
 @app.post("/questions/{category}/{section_id}")
 async def get_questions(category: str, section_id: str):
@@ -199,31 +174,149 @@ async def get_specific_question(category: str, section_id: str, question_index: 
 
 @app.post("/tts")
 async def text_to_speech(request: TTSRequest):
-    """Convert text to speech using ElevenLabs"""
+    """Convert text to speech using ElevenLabs or fallback"""
+    
+    # Fallback voice IDs in order of preference
+    fallback_voices = [
+        "pNInz6obpgDQGcFmaJgB",  # Adam
+        "21m00Tcm4TlvDq8ikWAM",  # Adam (old ID)
+        "AZnzlk1XvdvUeBnRgbld",  # Domi
+        "EXAVITGu4G4kzY6CFlYu",  # Bella
+        "ErXwobaYiN019PkySvjV",  # Elli
+        "MF3mGyNYGl1u6R4ZHJwN",  # Josh
+        "TxGEqnHWrfWFTfGW9XVX",  # Default male voice
+    ]
+    
+    # If no API key, provide a simple fallback response
     if not ELEVENLABS_API_KEY:
-        raise HTTPException(status_code=503, detail="ElevenLabs API key not configured")
+        # Return a simple text response indicating TTS is not available
+        return {
+            "text": request.text,
+            "message": "TTS not available - please configure ELEVENLABS_API_KEY in .env file",
+            "fallback": True
+        }
     
     try:
-        # Generate audio using ElevenLabs
-        audio = generate(
-            text=request.text,
-            voice=request.voice_id or "21m00Tcm4TlvDq8ikWAM",
-            model="eleven_turbo_v2"
-        )
+        # Try with requested voice ID first, then fallbacks
+        voice_id = request.voice_id
+        for attempt, voice in enumerate([voice_id] + fallback_voices):
+            if not voice:
+                continue
+                
+            try:
+                print(f"Attempting TTS with voice: {voice} (attempt {attempt + 1})")
+                audio = generate(
+                    text=request.text,
+                    voice=voice,
+                    model="eleven_turbo_v2_5"  # Use newer model
+                )
+                
+                # Convert audio bytes to streaming response
+                audio_stream = io.BytesIO(audio)
+                
+                return StreamingResponse(
+                    io.BytesIO(audio_stream.getvalue()),
+                    media_type="audio/mpeg",
+                    headers={
+                        "Content-Disposition": f"attachment; filename=tts_audio.mp3"
+                    }
+                )
+                
+            except Exception as voice_error:
+                print(f"Voice {voice} failed: {str(voice_error)}")
+                if attempt == len(fallback_voices):  # Last attempt
+                    raise voice_error
+                continue
         
-        # Convert audio bytes to streaming response
-        audio_stream = io.BytesIO(audio)
-        
-        return StreamingResponse(
-            io.BytesIO(audio_stream.getvalue()),
-            media_type="audio/mpeg",
-            headers={
-                "Content-Disposition": f"attachment; filename=tts_audio.mp3"
-            }
-        )
+        raise HTTPException(status_code=500, detail="All voice options failed")
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"TTS generation failed: {str(e)}")
+
+@app.post("/stt/transcribe")
+async def transcribe_audio(file: UploadFile = File(...), model: str = "base", language: str = "en"):
+    """Transcribe audio file to text using OpenAI Whisper"""
+    if not whisper_model:
+        raise HTTPException(status_code=503, detail="Whisper model not loaded")
+    
+    valid_types = ['audio/webm', 'audio/wav', 'audio/mp3', 'audio/mpeg', 'audio/ogg']
+    if file.content_type not in valid_types:
+        raise HTTPException(status_code=400, detail=f"Unsupported audio format: {file.content_type}")
+    
+    temp_input_path = None
+    temp_wav_path = None
+    
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename or "audio")[1]) as temp_file:
+            content = await file.read()
+            if len(content) < 100:
+                raise HTTPException(status_code=400, detail="Audio file too small")
+            temp_file.write(content)
+            temp_input_path = temp_file.name
+        
+        if file.content_type != 'audio/wav':
+            temp_wav_path = tempfile.mktemp(suffix='.wav')
+            if not convert_webm_to_wav(temp_input_path, temp_wav_path):
+                raise HTTPException(status_code=500, detail="Audio conversion failed")
+            audio_path = temp_wav_path
+        else:
+            audio_path = temp_input_path
+        
+        result = process_audio_with_whisper(audio_path, language)
+        
+        return TranscriptionResponse(
+            text=result["text"].strip(),
+            language=result.get("language", language),
+            duration=result.get("duration", 0.0)
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
+    finally:
+        if temp_input_path and os.path.exists(temp_input_path):
+            os.unlink(temp_input_path)
+        if temp_wav_path and os.path.exists(temp_wav_path):
+            os.unlink(temp_wav_path)
+
+@app.post("/stt/transcribe-base64")
+async def transcribe_audio_base64(audio_data: dict):
+    """Transcribe base64 encoded audio to text using OpenAI Whisper"""
+    if not whisper_model:
+        raise HTTPException(status_code=503, detail="Whisper model not loaded")
+    
+    try:
+        import base64
+        
+        # Decode base64 audio
+        audio_bytes = base64.b64decode(audio_data["audio"])
+        
+        # Save to temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
+            temp_file.write(audio_bytes)
+            temp_file_path = temp_file.name
+        
+        try:
+            # Transcribe using Whisper
+            result = whisper_model.transcribe(
+                temp_file_path,
+                language=audio_data.get("language", "en") if audio_data.get("language") != "auto" else None,
+                fp16=False
+            )
+            
+            return TranscriptionResponse(
+                text=result["text"].strip(),
+                language=result.get("language", audio_data.get("language", "en")),
+                duration=result.get("duration", 0.0)
+            )
+            
+        finally:
+            # Clean up temporary file
+            os.unlink(temp_file_path)
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
 
 @app.get("/sections")
 async def get_all_sections():

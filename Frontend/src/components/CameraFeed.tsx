@@ -11,29 +11,53 @@ export function CameraFeed({ onFocus }: Props) {
 
   useEffect(() => {
     let stream: MediaStream | null = null;
+    let cleanup: (() => void) | undefined;
 
     async function run() {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      if (!videoRef.current) return;
-      videoRef.current.srcObject = stream;
-      await videoRef.current.play();
-      setReady(true);
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        if (!videoRef.current) return;
+        
+        // Set the stream first
+        videoRef.current.srcObject = stream;
+        
+        // Wait for metadata to load before playing
+        videoRef.current.onloadedmetadata = async () => {
+          try {
+            await videoRef.current?.play();
+            setReady(true);
+          } catch (error) {
+            console.warn('Video play failed:', error);
+            setReady(false);
+          }
+        };
 
-      // Placeholder for MediaPipe Face Landmarker.
-      // This starter emits a synthetic focus % (replace with gaze/eye-contact calc).
+        // Placeholder for MediaPipe Face Landmarker.
+        // This starter emits a synthetic focus % (replace with gaze/eye-contact calc).
 
-      const id = window.setInterval(() => {
-        onFocus(Math.round(60 + Math.random() * 40));
-      }, 800);
+        const id = window.setInterval(() => {
+          onFocus(Math.round(60 + Math.random() * 40));
+        }, 800);
 
-      return () => window.clearInterval(id);
+        cleanup = () => {
+          window.clearInterval(id);
+        };
+
+        return cleanup;
+      } catch (error) {
+        console.error('Camera access failed:', error);
+        setReady(false);
+      }
     }
 
-    const cleanupPromise = run();
+    run();
 
     return () => {
-      cleanupPromise.then((cleanup) => cleanup?.());
+      cleanup?.();
       stream?.getTracks().forEach((t) => t.stop());
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
     };
   }, [onFocus]);
 
