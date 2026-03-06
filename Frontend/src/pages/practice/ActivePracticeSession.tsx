@@ -67,32 +67,6 @@ export function ActivePracticeSession() {
     return getTopic(session.category, session.topic);
   }, [session]);
 
-  const [questionDb, setQuestionDb] = useState<Record<string, Record<string, string[]>> | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/questionDatabase.json")
-      .then((r) => r.json())
-      .then((data) => {
-        if (cancelled) return;
-        setQuestionDb(data as Record<string, Record<string, string[]>>);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setQuestionDb(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const questions = useMemo(() => {
-    if (!session || !questionDb) return [] as string[];
-    const byCategory = questionDb[session.category];
-    if (!byCategory) return [] as string[];
-    return byCategory[session.topic] ?? [];
-  }, [questionDb, session]);
-
   const onFocus = useCallback((p: number) => {
     setFocusPercent(p);
   }, []);
@@ -151,7 +125,10 @@ export function ActivePracticeSession() {
         </div>
         <div className="space-y-5 lg:col-span-7">
           <FocusMeter value={focusPercent} />
-          <SectionTranscript questions={questions} />
+          <SectionTranscript 
+            category={session.category}
+            sectionId={session.topic}
+          />
         </div>
       </div>
     </AppShell>
