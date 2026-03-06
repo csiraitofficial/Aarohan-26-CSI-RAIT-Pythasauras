@@ -66,7 +66,7 @@ export function PracticeSetupPage() {
   useEffect(() => {
     if (category === "job-interview" && topicId === "app-developer") {
       setLoadingResources(true);
-      fetch(`http://localhost:8000/questions/job-interview/app-developer`)
+      fetch(`http://localhost:8001/questions/job-interview/app-developer`)
         .then((res) => res.json())
         .then((data) => {
           setAppDeveloperData(data);
