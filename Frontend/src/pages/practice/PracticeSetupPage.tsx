@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { ToggleSwitch } from "@/components/ui/ToggleSwitch";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem } from "@/lib/motion";
 import { getTopic, type TopicCategory } from "@/pages/practice/practiceCatalog";
@@ -39,13 +38,14 @@ export function PracticeSetupPage() {
     return getTopic(category, topicId);
   }, [category, topicId]);
 
-  const [duration, setDuration] = useState<number>(topic?.duration ?? 30);
-  const [difficulty, setDifficulty] = useState<string>("difficulty" in (topic ?? {}) ? (topic as any).difficulty : "balanced");
+  const [duration] = useState<number>(topic?.duration ?? 30);
+  const [difficulty] = useState<string>("difficulty" in (topic ?? {}) ? (topic as any).difficulty : "balanced");
+  const [questionCount] = useState(10);
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [microphoneEnabled, setMicrophoneEnabled] = useState(true);
-  const [realTimeFeedback, setRealTimeFeedback] = useState(true);
-  const [recordingMode, setRecordingMode] = useState<RecordingMode>("both");
-  const [feedbackIntensity, setFeedbackIntensity] = useState<FeedbackIntensity>("balanced");
+  const [realTimeFeedback] = useState(true);
+  const [recordingMode] = useState<RecordingMode>("both");
+  const [feedbackIntensity] = useState<FeedbackIntensity>("balanced");
 
   const [perm, setPerm] = useState<PermissionState>("prompt");
   const [previewOn, setPreviewOn] = useState(false);
@@ -141,74 +141,54 @@ export function PracticeSetupPage() {
         <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-12">
           <motion.section variants={reducedMotion ? undefined : staggerItem} className="lg:col-span-7 space-y-5">
             <Card variant="glass" className="p-5">
-              <div className="text-sm font-semibold text-zinc-700">Session Settings</div>
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <SelectRow
-                  label="Duration"
-                  value={String(duration)}
-                  onChange={(v) => setDuration(Number(v))}
-                  options={[
-                    { label: "15 min", value: "15" },
-                    { label: "30 min", value: "30" },
-                    { label: "45 min", value: "45" },
-                    { label: "60 min", value: "60" },
-                  ]}
-                />
-
-                <SelectRow
-                  label="Feedback intensity"
-                  value={feedbackIntensity}
-                  onChange={(v) => setFeedbackIntensity(v as FeedbackIntensity)}
-                  options={[
-                    { label: "Gentle", value: "gentle" },
-                    { label: "Balanced", value: "balanced" },
-                    { label: "Intensive", value: "intensive" },
-                  ]}
-                />
-
-                <SelectRow
-                  label="Recording mode"
-                  value={recordingMode}
-                  onChange={(v) => setRecordingMode(v as RecordingMode)}
-                  options={[
-                    { label: "Video", value: "video" },
-                    { label: "Audio", value: "audio" },
-                    { label: "Both", value: "both" },
-                  ]}
-                />
-
-                <SelectRow
-                  label="Difficulty"
-                  value={difficulty}
-                  onChange={setDifficulty}
-                  options={[
-                    { label: "Beginner", value: "beginner" },
-                    { label: "Intermediate", value: "intermediate" },
-                    { label: "Advanced", value: "advanced" },
-                  ]}
-                />
+              <div className="text-sm font-semibold text-zinc-700">Overview</div>
+              
+              <div className="mt-4 overflow-hidden rounded-2xl bg-zinc-900 ring-1 ring-zinc-200">
+                <div className="relative h-56 w-full bg-gradient-to-br from-zinc-800 to-zinc-900">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-white/80">Camera Preview</div>
+                      <div className="mt-2 text-sm text-white/60">Your camera feed will appear here</div>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-200 ring-1 ring-blue-500/25">
+                        <span className="h-2 w-2 rounded-full bg-blue-300 animate-pulse" aria-hidden />
+                        Preview Mode
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-4 space-y-3">
-                <ToggleRow
-                  label="Enable camera"
-                  desc="Use camera for posture and focus feedback"
-                  value={cameraEnabled}
-                  onChange={setCameraEnabled}
-                />
-                <ToggleRow
-                  label="Enable microphone"
-                  desc="Use microphone for speech clarity and filler analysis"
-                  value={microphoneEnabled}
-                  onChange={setMicrophoneEnabled}
-                />
-                <ToggleRow
-                  label="Real-time feedback"
-                  desc="Get coaching tips during the session"
-                  value={realTimeFeedback}
-                  onChange={setRealTimeFeedback}
-                />
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <Stat label="Duration" value="Min:5 minutes" />
+                <Stat label="Level" value={difficulty} />
+                <Stat label=" Total Questions" value={questionCount.toString()} />
               </div>
+
+              <div className="mt-4">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={startSession}
+                  disabled={perm !== "granted" && !(microphoneEnabled && !cameraEnabled)}
+                  className="w-full"
+                >
+                  Start session
+                </Button>
+                <div className="mt-2 text-xs text-zinc-500">
+                  Tip: If camera is denied, disable it and continue with microphone-only.
+                </div>
+              </div>
+            </Card>
+          </motion.section>
+
+          <motion.aside variants={reducedMotion ? undefined : staggerItem} className="lg:col-span-5 space-y-5">
+            <Card variant="glass" className="p-5">
+              <div className="text-sm font-semibold text-zinc-700">Focus areas</div>
+              <div className="mt-2 text-sm text-zinc-600">This is where we'll add selectable focus areas + comparisons.</div>
             </Card>
 
             <Card variant="glass" className="p-5">
@@ -274,93 +254,10 @@ export function PracticeSetupPage() {
                 ) : null}
               </div>
             </Card>
-          </motion.section>
-
-          <motion.aside variants={reducedMotion ? undefined : staggerItem} className="lg:col-span-5 space-y-5">
-            <Card variant="glass" className="p-5">
-              <div className="text-sm font-semibold text-zinc-700">Overview</div>
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                <Stat label="Duration" value={`${duration}m`} />
-                <Stat label="Mode" value={recordingMode} />
-                <Stat label="Feedback" value={realTimeFeedback ? "Live" : "Off"} />
-                <Stat label="Intensity" value={feedbackIntensity} />
-              </div>
-
-              <div className="mt-4">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={startSession}
-                  disabled={perm !== "granted" && !(microphoneEnabled && !cameraEnabled)}
-                  className="w-full"
-                >
-                  Start session
-                </Button>
-                <div className="mt-2 text-xs text-zinc-500">
-                  Tip: If camera is denied, disable it and continue with microphone-only.
-                </div>
-              </div>
-            </Card>
-
-            <Card variant="glass" className="p-5">
-              <div className="text-sm font-semibold text-zinc-700">Focus areas</div>
-              <div className="mt-2 text-sm text-zinc-600">This is where we’ll add selectable focus areas + comparisons.</div>
-            </Card>
           </motion.aside>
         </div>
       </motion.div>
     </AppShell>
-  );
-}
-
-function SelectRow({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  options: { label: string; value: string }[];
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
-      <div className="text-xs font-semibold text-zinc-700">{label}</div>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-2 w-full rounded-xl bg-zinc-50 px-3 py-2 text-sm ring-1 ring-zinc-200 focus:outline-none"
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
-function ToggleRow({
-  label,
-  desc,
-  value,
-  onChange,
-}: {
-  label: string;
-  desc: string;
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-start justify-between gap-4 rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
-      <div className="min-w-0">
-        <div className="text-sm font-semibold text-zinc-800">{label}</div>
-        <div className="mt-1 text-xs text-zinc-500">{desc}</div>
-      </div>
-      <ToggleSwitch checked={value} onCheckedChange={onChange} label={label} />
-    </div>
   );
 }
 

@@ -5,11 +5,9 @@ import { SpeechStats } from "@/components/SpeechStats";
 import { useSpeechWebSocket } from "@/lib/useSpeechWebSocket";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 
 export function PracticePage() {
   const [focusPercent, setFocusPercent] = useState(0);
-  const [sessionId] = useState(() => crypto.randomUUID());
 
   const { status, transcript, metrics, start, stop } = useSpeechWebSocket();
 
@@ -22,16 +20,6 @@ export function PracticePage() {
   return (
     <AppShell title="Practice">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <Card variant="glass" className="px-4 py-3">
-          <div className="text-xs text-zinc-500">Session</div>
-          <div
-            className="text-sm font-semibold text-zinc-800 truncate max-w-[200px] sm:max-w-none"
-            title={sessionId}
-          >
-            {sessionId}
-          </div>
-        </Card>
-
         <div className="flex gap-2">
           <Button variant="primary" size="md" onClick={start} disabled={running}>
             Start
