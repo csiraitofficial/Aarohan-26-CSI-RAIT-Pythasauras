@@ -186,11 +186,11 @@ export function DashboardPage() {
 
                 <div className="border-t border-zinc-100 flex-1 overflow-hidden">
                   <div className="divide-y divide-zinc-100">
-                    <DailyGoalRow title="Mock Test" subtitle="1/3 challenges completed" points="+15 IQ" done />
-                    <DailyGoalRow title="Viva Prep" subtitle="Complete structured answers" points="+15 IQ" />
-                    <DailyGoalRow title="Viva Challenges" subtitle="Practice 5 viva questions" points="+15 IQ" />
-                    <DailyGoalRow title="Quick Revision" subtitle="Review key concepts" points="+15 IQ" />
-                    <DailyGoalRow title="AI Feedback" subtitle="Analyze last session" points="+15 IQ" />
+                    <DailyGoalRow title="Mock Test" subtitle="1/3 challenges completed" points="+15 IQ" done navigateTo="/practice/mock" />
+                    <DailyGoalRow title="Viva Prep" subtitle="Complete structured answers" points="+15 IQ" navigateTo="/practice" />
+                    <DailyGoalRow title="Viva Challenges" subtitle="Practice 5 viva questions" points="+15 IQ" navigateTo="/community" />
+                    <DailyGoalRow title="Quick Revision" subtitle="Review key concepts" points="+15 IQ" navigateTo="/learning" />
+                    <DailyGoalRow title="AI Feedback" subtitle="Analyze last session" points="+15 IQ" navigateTo="/analytics" />
                   </div>
                 </div>
               </div>
@@ -293,7 +293,15 @@ function QuickAction({ label, tone, icon }: { label: string; tone: "violet" | "a
 
 
 
-function DailyGoalRow({ title, subtitle, points, done }: { title: string; subtitle: string; points: string; done?: boolean }) {
+function DailyGoalRow({ title, subtitle, points, done, navigateTo }: { 
+  title: string; 
+  subtitle: string; 
+  points: string; 
+  done?: boolean;
+  navigateTo: string;
+}) {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex items-center gap-3 px-4 py-3 sm:px-5 transition-colors hover:bg-zinc-50/60">
       {/* Status dot — fixed width column */}
@@ -305,13 +313,27 @@ function DailyGoalRow({ title, subtitle, points, done }: { title: string; subtit
 
       {/* Title + subtitle — flex-1 to fill remaining space */}
       <div className="flex-1 min-w-0">
-        <div className={`text-sm font-semibold ${done ? "text-zinc-400 line-through" : "text-zinc-900"}`}>{title}</div>
-        <div className="text-xs text-zinc-500 leading-snug">{subtitle}</div>
+        <div className={`text-sm font-semibold leading-snug ${done ? "text-zinc-400 line-through" : "text-zinc-900"}`}>{title}</div>
+        <div className="text-xs text-zinc-500 leading-snug mt-0.5">{subtitle}</div>
       </div>
 
-      {/* Points badge — fixed width so they all align */}
-      <div className="shrink-0 w-[72px] text-center rounded-full bg-violet-50 px-2 py-1 text-xs font-semibold text-violet-700 ring-1 ring-primary/20 whitespace-nowrap">
-        {points}
+      {/* Points badge + Go button — stacked vertically */}
+      <div className="shrink-0 flex flex-col items-end gap-2">
+        <div className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700 ring-1 ring-primary/20 whitespace-nowrap">
+          {points}
+        </div>
+        <button
+          type="button"
+          className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500 focus-visible:outline-offset-2 ${
+            done 
+              ? "bg-zinc-100 text-zinc-400 cursor-not-allowed" 
+              : "bg-violet-600 text-white hover:bg-violet-700 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
+          }`}
+          disabled={done}
+          aria-label={`Go to ${title}`}
+        >
+          Go
+        </button>
       </div>
     </div>
   );
