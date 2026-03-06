@@ -324,6 +324,7 @@ function DailyGoalRow({ title, subtitle, points, done, navigateTo }: {
         </div>
         <button
           type="button"
+          onClick={() => navigate(navigateTo)}
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-500 focus-visible:outline-offset-2 ${
             done 
               ? "bg-zinc-100 text-zinc-400 cursor-not-allowed" 
