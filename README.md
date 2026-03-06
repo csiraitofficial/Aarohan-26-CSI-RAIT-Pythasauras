@@ -1,4 +1,4 @@
-RoboBuddy
+
 RoboBuddy is an AI-based platform designed to help students prepare for vivas and interviews through realistic practice and meaningful feedback. Many students know the concepts but struggle to communicate answers clearly during exams or interviews. RoboBuddy focuses on improving both knowledge and communication.
 The platform allows students to practice answering questions in a simulated environment. It analyzes their responses and provides feedback on clarity, confidence, fluency, and correctness. Instead of just giving a score, RoboBuddy suggests what the student should improve and what topics they should revise next.
 
