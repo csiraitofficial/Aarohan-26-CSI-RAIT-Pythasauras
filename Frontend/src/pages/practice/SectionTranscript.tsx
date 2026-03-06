@@ -4,8 +4,6 @@ type SpeechStatus = "idle" | "connecting" | "running" | "closed" | "error";
 
 type Props = {
   status: SpeechStatus;
-  transcript: string;
-  metrics: { filler_count: number; pause_seconds: number; total_words: number };
   sessionId?: string;
   category?: string;
   topic?: string;
@@ -20,7 +18,7 @@ type Message = {
   isRealTime?: boolean; // For real-time STT responses
 };
 
-export function SectionTranscript({ status, transcript, sessionId, category, topic, onStart, onStop }: Props) {
+export function SectionTranscript({ status, sessionId, category, topic, onStart, onStop }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<string>("");
   const [realTimeTranscript, setRealTimeTranscript] = useState<string>("");
