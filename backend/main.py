@@ -176,13 +176,32 @@ async def get_questions(category: str, section_id: str):
     if section_id not in QUESTIONS_DATABASE[category]:
         raise HTTPException(status_code=404, detail=f"Section '{section_id}' not found in category '{category}'")
     
-    questions = QUESTIONS_DATABASE[category][section_id]
+    section_data = QUESTIONS_DATABASE[category][section_id]
+    
+    # Handle the new enhanced structure for app-developer
+    if isinstance(section_data, dict) and "interview-questions" in section_data:
+        return {
+            "category": category,
+            "section_id": section_id,
+            "interview_questions": section_data.get("interview-questions", []),
+            "video_resources": section_data.get("video-resources", []),
+            "text_resources": section_data.get("text-resources", []),
+            "total_questions": len(section_data.get("interview-questions", []))
+        }
+    
+    # Handle legacy structure (array of questions)
+    questions = section_data if isinstance(section_data, list) else []
     return {
         "category": category,
         "section_id": section_id,
         "questions": questions,
         "total_questions": len(questions)
     }
+
+@app.get("/questions/{category}/{section_id}")
+async def get_questions_get(category: str, section_id: str):
+    """Get all questions for a specific practice section (GET endpoint)"""
+    return await get_questions(category, section_id)
 
 @app.get("/questions/{category}/{section_id}/{question_index}")
 async def get_specific_question(category: str, section_id: str, question_index: int):
