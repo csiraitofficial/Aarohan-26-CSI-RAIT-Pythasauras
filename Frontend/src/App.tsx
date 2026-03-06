@@ -4,6 +4,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { HomePage } from "@/pages/HomePage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { LearningPage } from "@/pages/LearningPage";
+import { LearningResourcePage } from "@/pages/LearningResourcePage";
 import { LeaderboardPage } from "@/pages/LeaderboardPage";
 import { AnalyticsPage } from "@/pages/AnalyticsPage";
 import { CommunityPage } from "@/pages/CommunityPage";
@@ -13,6 +14,7 @@ import { TopicSelectionPage } from "@/pages/practice/TopicSelectionPage";
 import { MockTestPage } from "@/pages/practice/MockTestPage";
 import { PracticeSetupPage } from "@/pages/practice/PracticeSetupPage";
 import { ActivePracticeSession } from "@/pages/practice/ActivePracticeSession";
+import { SessionResultsPage } from "@/pages/practice/SessionResultsPage";
 import { LoginPage } from "@/pages/auth/LoginPage";
 import { SignUpPage } from "@/pages/auth/SignUpPage";
 import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
@@ -40,7 +42,9 @@ export default function App() {
                 <Route path="/practice/mock" element={<MockTestPage />} />
                 <Route path="/practice/:category/:topic" element={<PracticeSetupPage />} />
                 <Route path="/practice/session/:sessionId" element={<ActivePracticeSession />} />
+                <Route path="/practice/session/:sessionId/results" element={<SessionResultsPage />} />
                 <Route path="/learning" element={<LearningPage />} />
+                <Route path="/learning/resource/:id" element={<LearningResourcePage />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/community" element={<CommunityPage />} />

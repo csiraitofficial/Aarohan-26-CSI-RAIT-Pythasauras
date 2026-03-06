@@ -5,9 +5,10 @@ import { Card } from "@/components/ui/Card";
 type Props = {
   title?: string;
   questions: string[];
+  onNextQuestion?: () => void;
 };
 
-export function SectionTranscript({ title = "Section transcript", questions }: Props) {
+export function SectionTranscript({ title = "Section transcript", questions, onNextQuestion }: Props) {
   const [index, setIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastAudioUrlRef = useRef<string | null>(null);
@@ -26,6 +27,12 @@ export function SectionTranscript({ title = "Section transcript", questions }: P
 
   const canNext = total > 0 && index < total - 1;
   const canRestart = total > 0 && index !== 0;
+
+  const handleNext = useCallback(() => {
+    if (!canNext) return;
+    setIndex((i) => Math.min(total - 1, i + 1));
+    onNextQuestion?.();
+  }, [canNext, total, onNextQuestion]);
 
   const playTts = useCallback(async () => {
     if (!current) return;
@@ -110,7 +117,7 @@ export function SectionTranscript({ title = "Section transcript", questions }: P
             <Button variant="secondary" size="sm" disabled={!canRestart} onClick={() => setIndex(0)}>
               Restart
             </Button>
-            <Button variant="primary" size="sm" disabled={!canNext} onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}>
+            <Button variant="primary" size="sm" disabled={!canNext} onClick={handleNext}>
               Next
             </Button>
           </div>

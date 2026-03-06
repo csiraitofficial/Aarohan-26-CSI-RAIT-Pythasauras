@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -26,6 +27,7 @@ type LearningResource = {
 
 export function LearningPage() {
   const reducedMotion = useReducedMotion();
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<ResourceType | "all">("all");
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | "all">("all");
@@ -139,6 +141,20 @@ export function LearningPage() {
       isBookmarked: false,
       progress: 0.0,
     },
+    {
+      id: "r9",
+      title: "Mock Interview: Rapid-Fire Behavioral Prompts",
+      type: "exercise",
+      category: "Communication",
+      difficulty: "intermediate",
+      duration: 15,
+      description: "A timed drill to practice concise STAR answers with follow-up questions and strong closes.",
+      tags: ["behavioral", "star", "mock", "timed"],
+      rating: 4.6,
+      downloadCount: 389,
+      isBookmarked: false,
+      progress: 0.0,
+    },
   ]);
 
   const filtered = useMemo(() => {
@@ -197,114 +213,130 @@ export function LearningPage() {
           </div>
         </motion.section>
 
-        <motion.aside className="lg:col-span-4" variants={reducedMotion ? undefined : staggerItem}>
-          <div className="space-y-5">
-            <Card variant="glass" className="p-5">
-              <div className="text-sm font-semibold text-zinc-700">Search & Filters</div>
-              <div className="mt-4">
-                <label className="sr-only" htmlFor="resource-search">
-                  Search resources
-                </label>
-                <input
-                  id="resource-search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search videos, exercises, templates..."
-                  className="w-full rounded-2xl bg-white px-4 py-3 text-sm ring-1 ring-zinc-200 placeholder:text-zinc-400 focus:outline-none"
-                />
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className={`rounded-full px-3 py-1 text-xs ring-1 transition-colors ${
-                    onlyBookmarked ? "bg-violet-100 text-violet-700 ring-primary/30" : "bg-white text-zinc-600 ring-zinc-200 hover:bg-zinc-50"
-                  }`}
-                  onClick={() => setOnlyBookmarked((v) => !v)}
-                  aria-pressed={onlyBookmarked}
-                >
-                  Bookmarks ({counts.bookmarked})
-                </button>
-                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 ring-1 ring-zinc-200">
-                  {filtered.length} shown
-                </span>
-              </div>
-
-              <div className="mt-4 space-y-3">
-                <FilterChip<ResourceType | "all">
-                  label="Type"
-                  value={typeFilter}
-                  options={["all", "video", "article", "exercise", "template", "quiz"]}
-                  onChange={setTypeFilter}
-                />
-                <FilterChip<Difficulty | "all">
-                  label="Difficulty"
-                  value={difficultyFilter}
-                  options={["all", "beginner", "intermediate", "advanced"]}
-                  onChange={setDifficultyFilter}
-                />
-              </div>
-            </Card>
-
-            <Card variant="glass" className="p-5">
-              <div className="text-sm font-semibold text-zinc-700">Today’s Plan</div>
-              <div className="mt-3 space-y-3">
-                <PlanRow title="Watch 1 resource" meta="10–20 min" />
-                <PlanRow title="Do 1 drill" meta="5–10 min" />
-                <PlanRow title="Practice live" meta="10 min" />
-              </div>
-              <div className="mt-4">
-                <Button href="/practice" variant="robotic" size="md" className="w-full">
-                  Quick practice check
-                </Button>
-              </div>
-            </Card>
-          </div>
-        </motion.aside>
-
-        <motion.section className="lg:col-span-8" variants={reducedMotion ? undefined : staggerItem}>
-          <div className="space-y-5">
-            <Card variant="glass" className="p-5">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="text-sm font-semibold text-zinc-700">Continue Learning</div>
-                  <div className="mt-1 text-xs text-zinc-500">Pick up where you left off</div>
+        <motion.section className="lg:col-span-12" variants={reducedMotion ? undefined : staggerItem}>
+          <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <Card variant="glass" className="h-full p-5">
+                <div className="text-sm font-semibold text-zinc-700">Search & Filters</div>
+                <div className="mt-4">
+                  <label className="sr-only" htmlFor="resource-search">
+                    Search resources
+                  </label>
+                  <input
+                    id="resource-search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search videos, exercises, templates..."
+                    className="w-full rounded-2xl bg-white px-4 py-3 text-sm ring-1 ring-zinc-200 placeholder:text-zinc-400 focus:outline-none"
+                  />
                 </div>
-                <div className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 ring-1 ring-zinc-200">
-                  {resources.filter((r) => r.progress > 0 && r.progress < 1).length} in progress
-                </div>
-              </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                {resources
-                  .filter((r) => r.progress > 0 && r.progress < 1)
-                  .slice(0, 2)
-                  .map((r) => (
-                    <FeaturedResource key={r.id} r={r} onToggleBookmark={() => toggleBookmark(r.id)} />
-                  ))}
-                {resources.filter((r) => r.progress > 0 && r.progress < 1).length === 0 ? (
-                  <div className="rounded-2xl bg-white p-5 ring-1 ring-zinc-200 md:col-span-2">
-                    <div className="text-sm font-semibold text-zinc-800">No active progress yet</div>
-                    <div className="mt-1 text-sm text-zinc-600">Start any resource below to see it here.</div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className={`rounded-full px-3 py-1 text-xs ring-1 transition-colors ${
+                      onlyBookmarked
+                        ? "bg-violet-100 text-violet-700 ring-primary/30"
+                        : "bg-white text-zinc-600 ring-zinc-200 hover:bg-zinc-50"
+                    }`}
+                    onClick={() => setOnlyBookmarked((v) => !v)}
+                    aria-pressed={onlyBookmarked}
+                  >
+                    Bookmarks ({counts.bookmarked})
+                  </button>
+                  <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 ring-1 ring-zinc-200">
+                    {filtered.length} shown
+                  </span>
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  <FilterChip<ResourceType | "all">
+                    label="Type"
+                    value={typeFilter}
+                    options={["all", "video", "article", "exercise", "template", "quiz"]}
+                    onChange={setTypeFilter}
+                  />
+                  <FilterChip<Difficulty | "all">
+                    label="Difficulty"
+                    value={difficultyFilter}
+                    options={["all", "beginner", "intermediate", "advanced"]}
+                    onChange={setDifficultyFilter}
+                  />
+                </div>
+              </Card>
+            </div>
+
+            <div className="lg:col-span-4">
+              <Card variant="glass" className="h-full p-5">
+                <div className="text-sm font-semibold text-zinc-700">Today’s Plan</div>
+                <div className="mt-3 space-y-3">
+                  <PlanRow title="Watch 1 resource" meta="10–20 min" />
+                  <PlanRow title="Do 1 drill" meta="5–10 min" />
+                  <PlanRow title="Practice live" meta="10 min" />
+                </div>
+                <div className="mt-4">
+                  <Button href="/practice" variant="robotic" size="md" className="w-full">
+                    Quick practice check
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            <div className="lg:col-span-12">
+              <Card variant="glass" className="p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <div className="text-sm font-semibold text-zinc-700">Continue Learning</div>
+                    <div className="mt-1 text-xs text-zinc-500">Pick up where you left off</div>
                   </div>
-                ) : null}
-              </div>
-            </Card>
-
-            <Card variant="glass" className="p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-sm font-semibold text-zinc-700">All Resources</div>
-                  <div className="mt-1 text-xs text-zinc-500">Cleaner cards, better scanning, faster actions</div>
+                  <div className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 ring-1 ring-zinc-200">
+                    {resources.filter((r) => r.progress > 0 && r.progress < 1).length} in progress
+                  </div>
                 </div>
-              </div>
 
-              <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-                {filtered.map((r) => (
-                  <ResourceCard key={r.id} r={r} onToggleBookmark={() => toggleBookmark(r.id)} />
-                ))}
-              </div>
-            </Card>
+                <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {resources
+                    .filter((r) => r.progress > 0 && r.progress < 1)
+                    .slice(0, 2)
+                    .map((r) => (
+                      <FeaturedResource
+                        key={r.id}
+                        r={r}
+                        onToggleBookmark={() => toggleBookmark(r.id)}
+                        onOpenResources={() => navigate(`/learning/resource/${r.id}`)}
+                      />
+                    ))}
+                  {resources.filter((r) => r.progress > 0 && r.progress < 1).length === 0 ? (
+                    <div className="rounded-2xl bg-white p-5 ring-1 ring-zinc-200 md:col-span-2">
+                      <div className="text-sm font-semibold text-zinc-800">No active progress yet</div>
+                      <div className="mt-1 text-sm text-zinc-600">Start any resource below to see it here.</div>
+                    </div>
+                  ) : null}
+                </div>
+              </Card>
+            </div>
+
+            <div className="lg:col-span-12">
+              <Card variant="glass" className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="text-sm font-semibold text-zinc-700">All Resources</div>
+                    <div className="mt-1 text-xs text-zinc-500">Cleaner cards, better scanning, faster actions</div>
+                  </div>
+                </div>
+
+                <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
+                  {filtered.map((r) => (
+                    <ResourceCard
+                      key={r.id}
+                      r={r}
+                      onToggleBookmark={() => toggleBookmark(r.id)}
+                      onOpenResources={() => navigate(`/learning/resource/${r.id}`)}
+                    />
+                  ))}
+                </div>
+              </Card>
+            </div>
           </div>
         </motion.section>
       </motion.div>
@@ -348,7 +380,15 @@ function FilterChip<T extends string>({
   );
 }
 
-function ResourceCard({ r, onToggleBookmark }: { r: LearningResource; onToggleBookmark: () => void }) {
+function ResourceCard({
+  r,
+  onToggleBookmark,
+  onOpenResources,
+}: {
+  r: LearningResource;
+  onToggleBookmark: () => void;
+  onOpenResources: () => void;
+}) {
   return (
     <Card variant="default" className="p-0">
       <div className="flex h-full gap-4 p-4">
@@ -395,6 +435,16 @@ function ResourceCard({ r, onToggleBookmark }: { r: LearningResource; onToggleBo
               <span className="rounded-full bg-white px-2 py-1 ring-1 ring-zinc-200">{r.downloadCount}</span>
             </div>
 
+            <button
+              type="button"
+              onClick={onOpenResources}
+              className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold ring-1 transition-colors ${
+                "bg-white text-zinc-600 ring-zinc-200 hover:bg-zinc-50"
+              }`}
+            >
+              Resources
+            </button>
+
             <div className="w-full">
               <div className="flex items-center justify-between text-xs">
                 <div className="text-zinc-500">Progress</div>
@@ -414,7 +464,15 @@ function ResourceCard({ r, onToggleBookmark }: { r: LearningResource; onToggleBo
   );
 }
 
-function FeaturedResource({ r, onToggleBookmark }: { r: LearningResource; onToggleBookmark: () => void }) {
+function FeaturedResource({
+  r,
+  onToggleBookmark,
+  onOpenResources,
+}: {
+  r: LearningResource;
+  onToggleBookmark: () => void;
+  onOpenResources: () => void;
+}) {
   const reducedMotion = useReducedMotion();
   return (
     <motion.div whileHover={reducedMotion ? undefined : { y: -3 }}>
@@ -430,17 +488,27 @@ function FeaturedResource({ r, onToggleBookmark }: { r: LearningResource; onTogg
             <div className="mt-1 text-xs text-zinc-600">{r.category}</div>
           </div>
 
-          <button
-            type="button"
-            onClick={onToggleBookmark}
-            className={`shrink-0 rounded-xl px-3 py-2 text-xs font-semibold ring-1 transition-colors ${
-              r.isBookmarked ? "bg-violet-100 text-violet-700 ring-primary/30" : "bg-white text-zinc-600 ring-zinc-200 hover:bg-zinc-50"
-            }`}
-            aria-pressed={r.isBookmarked}
-            aria-label={r.isBookmarked ? "Remove bookmark" : "Add bookmark"}
-          >
-            {r.isBookmarked ? "Saved" : "Save"}
-          </button>
+          <div className="shrink-0 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onOpenResources}
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-zinc-600 ring-1 ring-zinc-200 transition-colors hover:bg-zinc-50"
+            >
+              Resources
+            </button>
+
+            <button
+              type="button"
+              onClick={onToggleBookmark}
+              className={`rounded-xl px-3 py-2 text-xs font-semibold ring-1 transition-colors ${
+                r.isBookmarked ? "bg-violet-100 text-violet-700 ring-primary/30" : "bg-white text-zinc-600 ring-zinc-200 hover:bg-zinc-50"
+              }`}
+              aria-pressed={r.isBookmarked}
+              aria-label={r.isBookmarked ? "Remove bookmark" : "Add bookmark"}
+            >
+              {r.isBookmarked ? "Saved" : "Save"}
+            </button>
+          </div>
         </div>
 
         <div className="mt-4 rounded-2xl bg-white/70 p-4 ring-1 ring-zinc-200">

@@ -3,28 +3,78 @@ import { Card } from "@/components/ui/Card";
 import { motion } from "framer-motion";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem } from "@/lib/motion";
+import { useMemo } from "react";
+
+type IQPoints = {
+  total: number;
+  byCategory: Record<string, number>;
+  byTopic: Record<string, number>;
+  bySection: Record<string, number>;
+  weekly: number;
+  monthly: number;
+};
+
+function readIQPoints(): IQPoints {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return { total: 0, byCategory: { "job-interview": 0, "skill-development": 0 }, byTopic: {}, bySection: {}, weekly: 0, monthly: 0 };
+  }
+  const v = window.localStorage.getItem("robobuddy.iq.points");
+  if (!v) return { total: 0, byCategory: { "job-interview": 0, "skill-development": 0 }, byTopic: {}, bySection: {}, weekly: 0, monthly: 0 };
+  try {
+    return JSON.parse(v) as IQPoints;
+  } catch {
+    return { total: 0, byCategory: { "job-interview": 0, "skill-development": 0 }, byTopic: {}, bySection: {}, weekly: 0, monthly: 0 };
+  }
+}
 
 export function AnalyticsPage() {
   const reducedMotion = useReducedMotion();
+  const iqData = useMemo(() => readIQPoints(), []);
 
   const overview = {
     totalPracticeTime: 312,
-    skillsImproved: 7,
+    skillsImproved: Object.keys(iqData.bySection).length,
     achievementCount: 12,
-    weeklyStreak: 5,
   } as const;
 
-  const realtime = {
-    currentSessionTime: 14,
-    focusLevel: 0.74,
-    speechClarity: 0.68,
-    confidenceScore: 0.62,
-  } as const;
+  const totalPracticeSeconds = useMemo(() => {
+    // Read actual practice time from session storage
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return 0;
+    }
+    let totalSeconds = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('robobuddy.practice.session.') && key.endsWith('.iq')) {
+        try {
+          const data = JSON.parse(localStorage.getItem(key) || '{}');
+          totalSeconds += data.timeSpent || 0;
+        } catch {
+          // Skip invalid data
+        }
+      }
+    }
+    return totalSeconds;
+  }, []);
 
-  const radar = {
-    labels: ["Communication", "Technical", "Confidence", "Clarity", "Pacing"],
-    values: [0.78, 0.62, 0.66, 0.7, 0.58],
-  } as const;
+  const topSections = useMemo(() => {
+    const sections = Object.entries(iqData.bySection);
+    return sections.sort((a, b) => b[1] - a[1]).slice(0, 3);
+  }, [iqData.bySection]);
+
+  const highestSection = useMemo(() => {
+    const sections = Object.entries(iqData.bySection);
+    return sections.sort((a, b) => b[1] - a[1]).slice(0, 1);
+  }, [iqData.bySection]);
+
+  const radar = useMemo(() => {
+    // Map sections to radar labels and normalize points
+    const sectionEntries = Object.entries(iqData.bySection);
+    const maxValue = Math.max(...sectionEntries.map(([, pts]) => pts), 1);
+    const labels = sectionEntries.map(([section]) => section);
+    const values = sectionEntries.map(([, pts]) => pts / maxValue);
+    return { labels, values };
+  }, [iqData.bySection]);
 
   const heat = Array.from({ length: 35 }, (_, i) => {
     const base = (i * 17) % 11;
@@ -53,10 +103,12 @@ export function AnalyticsPage() {
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <KpiCard label="Practice Time" value={`${overview.totalPracticeTime} min`} hint="This week" />
+              <KpiCard label="Practice Time" value={`${totalPracticeSeconds} sec`} hint="Total Seconds" />
               <KpiCard label="Skills Improved" value={`${overview.skillsImproved}`} hint="Last 30 days" />
               <KpiCard label="Achievements" value={`${overview.achievementCount}`} hint="Unlocked" />
-              <KpiCard label="Weekly Streak" value={`${overview.weeklyStreak} days`} hint="Consistency" />
+              {highestSection.map(([section, pts]) => (
+                <KpiCard key={section} label="Highest Section Points" value={`${Math.floor(pts)}`} hint={section} />
+              ))}
             </div>
           </Card>
         </motion.section>
@@ -67,12 +119,56 @@ export function AnalyticsPage() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold text-zinc-700">Skill Radar</div>
-                  <div className="mt-1 text-xs text-zinc-500">Communication • Technical • Confidence</div>
+                  <div className="mt-1 text-xs text-zinc-500">Section IQ distribution</div>
                 </div>
-                <div className="text-xs text-zinc-500">Mocked</div>
+                <div className="text-xs text-zinc-500">Live</div>
               </div>
               <div className="mt-4 rounded-2xl bg-gradient-to-br from-violet-100/80 to-white ring-1 ring-zinc-200 p-4">
                 <RadarChart labels={radar.labels} values={radar.values} />
+              </div>
+            </Card>
+
+            <Card variant="glass" className="p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold text-zinc-700">IQ by Section</div>
+                  <div className="mt-1 text-xs text-zinc-500">Points per section</div>
+                </div>
+                <div className="text-xs text-zinc-500">Live</div>
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {Object.entries(iqData.bySection).map(([section, pts]) => (
+                  <div key={section} className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-xs font-semibold text-zinc-700">{section}</div>
+                      <div className="text-sm font-bold text-zinc-900">{Math.floor(pts)}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card variant="glass" className="p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold text-zinc-700">Weekly & Monthly IQ</div>
+                  <div className="mt-1 text-xs text-zinc-500">Points this week and month</div>
+                </div>
+                <div className="text-xs text-zinc-500">Live</div>
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                  <div className="text-xs font-semibold text-zinc-700">This Week</div>
+                  <div className="mt-2 text-center">
+                    <div className="text-2xl font-bold text-zinc-900">{iqData.weekly}</div>
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                  <div className="text-xs font-semibold text-zinc-700">This Month</div>
+                  <div className="mt-2 text-center">
+                    <div className="text-2xl font-bold text-zinc-900">{iqData.monthly}</div>
+                  </div>
+                </div>
               </div>
             </Card>
 
@@ -133,13 +229,23 @@ export function AnalyticsPage() {
           </div>
 
           <div className="lg:col-span-4 space-y-5">
-            <Card variant="glass" className="p-4 sm:p-5" roboticBorder particleEffect>
-              <div className="text-sm font-semibold text-zinc-700">Real-time Metrics</div>
-              <div className="mt-4 space-y-4">
-                <MetricRow label="Session" value={`${realtime.currentSessionTime} min`} />
-                <MetricBar label="Focus" value={realtime.focusLevel} />
-                <MetricBar label="Speech clarity" value={realtime.speechClarity} />
-                <MetricBar label="Confidence" value={realtime.confidenceScore} />
+            <Card variant="glass" className="p-4 sm:p-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold text-zinc-700">Top Sections</div>
+                  <div className="mt-1 text-xs text-zinc-500">Highest IQ sections</div>
+                </div>
+                <div className="text-xs text-zinc-500">Live</div>
+              </div>
+              <div className="mt-4 grid grid-cols-1 gap-3">
+                {topSections.map(([section, pts]) => (
+                  <div key={section} className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-xs font-semibold text-zinc-700">{section}</div>
+                      <div className="text-sm font-bold text-zinc-900">{Math.floor(pts)}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </Card>
 
@@ -348,26 +454,3 @@ function BenchmarkRow({
   );
 }
 
-function MetricRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="text-xs font-semibold text-zinc-700">{label}</div>
-      <div className="text-xs text-zinc-500">{value}</div>
-    </div>
-  );
-}
-
-function MetricBar({ label, value }: { label: string; value: number }) {
-  const p = Math.max(0, Math.min(1, value));
-  return (
-    <div>
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-xs font-semibold text-zinc-700">{label}</div>
-        <div className="text-xs text-zinc-500">{Math.round(p * 100)}%</div>
-      </div>
-      <div className="mt-2 h-2 rounded-full bg-zinc-100 ring-1 ring-zinc-200 overflow-hidden">
-        <div className="h-full rounded-full bg-gradient-to-r from-violet-600 to-indigo-600" style={{ width: `${Math.round(p * 100)}%` }} />
-      </div>
-    </div>
-  );
-}

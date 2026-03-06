@@ -8,6 +8,7 @@ export function CameraFeed({ onFocus }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [ready, setReady] = useState(false);
 
+
   useEffect(() => {
     let stream: MediaStream | null = null;
 

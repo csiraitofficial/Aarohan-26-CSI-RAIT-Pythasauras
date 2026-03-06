@@ -25,6 +25,12 @@ type SessionConfig = {
   feedbackIntensity: FeedbackIntensity;
 };
 
+type SessionIQ = {
+  questionsAnswered: number;
+  timeSpent: number; // Total seconds across all sessions
+  sessionStartTime: number;
+};
+
 function readSession(sessionId: string): SessionConfig | null {
   const v = window.localStorage.getItem(`robobuddy.practice.session.${sessionId}`);
   if (!v) return null;
@@ -33,6 +39,20 @@ function readSession(sessionId: string): SessionConfig | null {
   } catch {
     return null;
   }
+}
+
+function readSessionIQ(sessionId: string): SessionIQ {
+  const v = window.localStorage.getItem(`robobuddy.practice.session.${sessionId}.iq`);
+  if (!v) return { questionsAnswered: 0, timeSpent: 0, sessionStartTime: Date.now() };
+  try {
+    return JSON.parse(v) as SessionIQ;
+  } catch {
+    return { questionsAnswered: 0, timeSpent: 0, sessionStartTime: Date.now() };
+  }
+}
+
+function writeSessionIQ(sessionId: string, iq: SessionIQ): void {
+  window.localStorage.setItem(`robobuddy.practice.session.${sessionId}.iq`, JSON.stringify(iq));
 }
 
 function bumpProgress(category: TopicCategory, topic: string) {
@@ -61,6 +81,29 @@ export function ActivePracticeSession() {
     if (!sessionId) return null;
     return readSession(sessionId);
   }, [sessionId]);
+
+  const [sessionIQ, setSessionIQ] = useState<SessionIQ>(() => 
+    sessionId ? readSessionIQ(sessionId) : { questionsAnswered: 0, timeSpent: 0, sessionStartTime: Date.now() }
+  );
+
+  const sessionStartTime = sessionIQ.sessionStartTime;
+  const [currentSessionTime, setCurrentSessionTime] = useState(0);
+
+  // Update current session time every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newTime = Math.floor((Date.now() - sessionStartTime) / 1000);
+      setCurrentSessionTime(newTime);
+      
+      // Update sessionIQ with current time even if no question answered
+      setSessionIQ(prev => ({
+        ...prev,
+        timeSpent: newTime
+      }));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [sessionStartTime]);
 
   const topic = useMemo(() => {
     if (!session) return null;
@@ -92,6 +135,19 @@ export function ActivePracticeSession() {
     if (!byCategory) return [] as string[];
     return byCategory[session.topic] ?? [];
   }, [questionDb, session]);
+
+  const handleNextQuestion = useCallback(() => {
+    if (!sessionId) return;
+    
+    const updatedIQ = {
+      ...sessionIQ,
+      questionsAnswered: sessionIQ.questionsAnswered + 1,
+      // Don't override timeSpent - it's already being updated continuously
+    };
+    
+    setSessionIQ(updatedIQ);
+    writeSessionIQ(sessionId, updatedIQ);
+  }, [sessionId, sessionIQ]);
 
   const onFocus = useCallback((p: number) => {
     setFocusPercent(p);
@@ -131,13 +187,18 @@ export function ActivePracticeSession() {
           </div>
         </Card>
 
+        <Card variant="glass" className="px-4 py-3">
+          <div className="text-xs text-zinc-500">Session Time</div>
+          <div className="text-sm font-semibold text-zinc-800">{currentSessionTime} sec</div>
+        </Card>
+
         <div className="flex gap-2">
           <Button
             variant="secondary"
             size="md"
             onClick={() => {
               stop();
-              navigate("/practice");
+              navigate(`/practice/session/${sessionId}/results`);
             }}
           >
             End
@@ -151,7 +212,7 @@ export function ActivePracticeSession() {
         </div>
         <div className="space-y-5 lg:col-span-7">
           <FocusMeter value={focusPercent} />
-          <SectionTranscript questions={questions} />
+          <SectionTranscript questions={questions} onNextQuestion={handleNextQuestion} />
         </div>
       </div>
     </AppShell>
