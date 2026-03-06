@@ -34,7 +34,7 @@ export function AppShell({ title, children }: Props) {
       <div className="mx-auto flex min-h-screen w-full max-w-7xl gap-5 px-4 py-4 sm:px-5 sm:py-6">
         {/* Desktop sidebar — hidden on mobile */}
         <aside className="hidden lg:block w-56 shrink-0 lg:w-64">
-          <div className="sticky top-6 rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-zinc-200/80 backdrop-blur-md border border-white/50">
+          <div className="sticky top-6 rounded-2xl bg-gradient-to-br from-violet-700/40 via-purple-700/30 to-indigo-700/35 p-4 shadow-sm ring-1 ring-violet-200/30 backdrop-blur-md border border-white/10">
             <div className="flex items-center gap-3">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-glow-sm overflow-hidden ring-1 ring-white/40">
                 <img src={aiCoachAvatarSrc} alt="" className="h-full w-full object-cover" decoding="async" />
@@ -53,22 +53,22 @@ export function AppShell({ title, children }: Props) {
                     key={it.label}
                     to={it.href}
                     className={`relative block rounded-xl px-3 py-2.5 text-sm transition-colors duration-normal focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 ${isActive
-                      ? "text-zinc-900 font-medium bg-violet-50"
-                      : "text-zinc-700 hover:bg-violet-50/70 hover:text-zinc-900"
+                      ? "text-white font-bold bg-violet-950/60"
+                      : "text-zinc-950 font-bold hover:bg-violet-950/40 hover:text-white"
                       }`}
                     aria-current={isActive ? "page" : undefined}
                   >
                     {isActive && !reducedMotion && (
                       <motion.span
                         layoutId="nav-active"
-                        className="absolute inset-0 rounded-xl bg-violet-100/80 ring-1 ring-primary/20 -z-10"
+                        className="absolute inset-0 rounded-xl bg-violet-950/50 ring-1 ring-violet-200/10 -z-10"
                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
                         aria-hidden
                       />
                     )}
                     {isActive && reducedMotion && (
                       <span
-                        className="absolute inset-0 rounded-xl bg-violet-100/80 ring-1 ring-primary/20 -z-10"
+                        className="absolute inset-0 rounded-xl bg-violet-950/50 ring-1 ring-violet-200/10 -z-10"
                         aria-hidden
                       />
                     )}
@@ -179,8 +179,8 @@ export function AppShell({ title, children }: Props) {
                       to={it.href}
                       onClick={() => setMobileNavOpen(false)}
                       className={`block rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isActive
-                        ? "text-violet-700 bg-violet-50 ring-1 ring-violet-200"
-                        : "text-zinc-700 hover:bg-zinc-50"
+                        ? "text-white font-bold bg-violet-950/70 ring-1 ring-violet-200/10"
+                        : "text-zinc-950 font-bold hover:bg-violet-950/10 hover:text-white"
                         }`}
                     >
                       {it.label}
