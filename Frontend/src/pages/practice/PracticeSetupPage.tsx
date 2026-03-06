@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { staggerContainer, staggerItem } from "@/lib/motion";
 import { getTopic, type TopicCategory } from "@/pages/practice/practiceCatalog";
+import { AppDeveloperResources } from "@/components/AppDeveloperResources";
 
 type PermissionState = "prompt" | "granted" | "denied";
 
@@ -49,6 +50,8 @@ export function PracticeSetupPage() {
 
   const [perm, setPerm] = useState<PermissionState>("prompt");
   const [previewOn, setPreviewOn] = useState(false);
+  const [appDeveloperData, setAppDeveloperData] = useState<any>(null);
+  const [loadingResources, setLoadingResources] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -58,6 +61,23 @@ export function PracticeSetupPage() {
       streamRef.current = null;
     };
   }, []);
+
+  // Fetch app developer resources when topic is app-developer
+  useEffect(() => {
+    if (category === "job-interview" && topicId === "app-developer") {
+      setLoadingResources(true);
+      fetch(`http://localhost:8001/questions/job-interview/app-developer`)
+        .then((res) => res.json())
+        .then((data) => {
+          setAppDeveloperData(data);
+          setLoadingResources(false);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch app developer resources:", error);
+          setLoadingResources(false);
+        });
+    }
+  }, [category, topicId]);
 
   useEffect(() => {
     if (perm === "granted" && previewOn && videoRef.current && streamRef.current) {
@@ -196,6 +216,30 @@ export function PracticeSetupPage() {
                 </div>
               </div>
             </Card>
+
+            {/* App Developer Resources - Only show for app-developer topic */}
+            {category === "job-interview" && topicId === "app-developer" && (
+              <motion.div variants={reducedMotion ? undefined : staggerItem}>
+                {loadingResources ? (
+                  <Card variant="glass" className="p-6">
+                    <div className="text-center text-sm text-zinc-600">Loading learning resources...</div>
+                  </Card>
+                ) : appDeveloperData ? (
+                  <Card variant="glass" className="p-6">
+                    <div className="text-sm font-semibold text-zinc-700 mb-4">Learning Resources</div>
+                    <AppDeveloperResources
+                      videoResources={appDeveloperData.video_resources || []}
+                      textResources={appDeveloperData.text_resources || []}
+                      interviewQuestions={appDeveloperData.interview_questions || []}
+                    />
+                  </Card>
+                ) : (
+                  <Card variant="glass" className="p-6">
+                    <div className="text-center text-sm text-zinc-600">Unable to load learning resources</div>
+                  </Card>
+                )}
+              </motion.div>
+            )}
           </motion.section>
 
           <motion.aside variants={reducedMotion ? undefined : staggerItem} className="lg:col-span-5 space-y-5">

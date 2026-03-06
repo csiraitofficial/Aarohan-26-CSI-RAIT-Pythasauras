@@ -21,13 +21,96 @@
       "How do you handle conflicting feedback from different stakeholders?",
       "Describe a UX problem you identified using data. What did you change?"
     ],
-    "app-developer": [
-      "How do you approach offline-first behavior in a mobile app?",
-      "Explain your strategy for handling push notifications end-to-end.",
-      "How do you optimize app startup time and reduce perceived latency?",
-      "Describe how you handle different screen sizes, accessibility, and platform conventions.",
-      "Tell me about a tricky bug you solved on mobile. How did you reproduce it?"
-    ],
+    "app-developer": {
+      "interview-questions": [
+        "How do you approach offline-first behavior in a mobile app?",
+        "Explain your strategy for handling push notifications end-to-end.",
+        "How do you optimize app startup time and reduce perceived latency?",
+        "Describe how you handle different screen sizes, accessibility, and platform conventions.",
+        "Tell me about a tricky bug you solved on mobile. How did you reproduce it?"
+      ],
+      "video-resources": [
+        {
+          "title": "Mobile App Development Introduction",
+          "url": "https://www.youtube.com/embed/-foyVzTOf8o?si=cUebXbRY2DFXaDtr",
+          "description": "Complete guide to mobile app development fundamentals"
+        },
+        {
+          "title": "Advanced Mobile Development Techniques",
+          "url": "https://www.youtube.com/embed/n5CQK1knRko?si=Y2zOHjpOwU6CM7CG",
+          "description": "Professional mobile app development best practices"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "What is Mobile App Development Process",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/mobile-computing/what-is-mobile-app-development-process/",
+          "content": {
+            "introduction": "Mobile app development is about designing and building applications specifically for mobile devices. Unlike desktop software, mobile apps are tailored to work on smaller screens, touch-based interfaces, and often limited processing power. Developers use programming languages like Swift for Apple's iOS platform or Kotlin/Java for Android devices.",
+            "key_areas": [
+              "User Experience (UX) and User Interface (UI) Design: Creating an app that's easy to use and visually appealing.",
+              "Backend Development: Building the server-side systems that power the app, like databases or cloud services.",
+              "Quality Assurance (QA): Testing the app to ensure it works smoothly without bugs."
+            ],
+            "development_process": [
+              {
+                "stage": "1. Ideation and Conceptualization",
+                "description": "Brainstorming phase where developers identify unique value proposition, target audience, and key features."
+              },
+              {
+                "stage": "2. Planning and Analysis",
+                "description": "Defining scope, market research, project plan, and creating user stories and prototypes."
+              },
+              {
+                "stage": "3. Design",
+                "description": "Creating UI/UX design, choosing colors, fonts, icons, and building interactive mockups."
+              },
+              {
+                "stage": "4. Development",
+                "description": "Frontend development (interface) and backend development (server-side systems) using Swift/Kotlin/Java."
+              },
+              {
+                "stage": "5. Testing",
+                "description": "Functionality testing, usability testing, performance testing, and bug fixing."
+              },
+              {
+                "stage": "6. Deployment",
+                "description": "Submitting to app stores, preparing listings, and launching the app."
+              },
+              {
+                "stage": "7. Maintenance",
+                "description": "Ongoing bug fixes, updates, and ensuring compatibility with new devices and OS updates."
+              }
+            ],
+            "cost_factors": [
+              "Complexity: Simple apps cost less than complex ones",
+              "Features: More features increase costs",
+              "Design: Custom designs are more expensive",
+              "Platform: iOS and Android development costs more",
+              "Team Experience and Location: Varies by region"
+            ],
+            "cost_ranges": {
+              "simple": "$10,000–$50,000 (e.g., basic note-taking app)",
+              "medium": "$50,000–$150,000 (e.g., e-commerce app)",
+              "complex": "$150,000–$500,000+ (e.g., gaming app with AR)"
+            },
+            "new_technologies": [
+              "5G Connectivity",
+              "Artificial Intelligence (AI) and Machine Learning (ML)",
+              "Augmented Reality (AR) and Virtual Reality (VR)",
+              "Blockchain Technology",
+              "Wearable Devices",
+              "Internet of Things (IoT)",
+              "Beacon Technology",
+              "Cloud Computing",
+              "Cross-Platform Development Tools",
+              "Low-Code/No-Code Platforms"
+            ]
+          }
+        }
+      ]
+    },
     "devops-engineer": [
       "Explain a CI/CD pipeline you designed. What were the key stages and why?",
       "How do you monitor a production system and define useful alerts?",
