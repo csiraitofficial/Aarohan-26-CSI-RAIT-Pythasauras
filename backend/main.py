@@ -12,6 +12,7 @@ import os
 import ffmpeg
 from elevenlabs import generate, Voice, set_api_key
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Load environment variables from .env file
 load_dotenv()
@@ -33,6 +34,46 @@ def load_questions_database():
         }
 
 QUESTIONS_DATABASE = load_questions_database()
+
+# STT transcription storage functions
+STT_DATA_FILE = "STTdata.json"
+
+def load_stt_data():
+    """Load existing STT data from JSON file"""
+    try:
+        if os.path.exists(STT_DATA_FILE):
+            with open(STT_DATA_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return []
+    except Exception as e:
+        print(f"Error loading STT data: {e}")
+        return []
+
+def save_stt_transcription(text: str, language: str = "en", duration: float = 0.0):
+    """Save STT transcription to JSON file"""
+    try:
+        stt_data = load_stt_data()
+        
+        new_entry = {
+            "id": len(stt_data) + 1,
+            "text": text,
+            "language": language,
+            "duration": duration,
+            "timestamp": datetime.now().isoformat(),
+            "endpoint": "/stt/transcribe"
+        }
+        
+        stt_data.append(new_entry)
+        
+        with open(STT_DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(stt_data, f, indent=2, ensure_ascii=False)
+        
+        print(f"✅ Saved STT transcription: {text[:50]}...")
+        return new_entry
+        
+    except Exception as e:
+        print(f"❌ Error saving STT transcription: {e}")
+        return None
 
 def convert_webm_to_wav(webm_path: str, wav_path: str) -> bool:
     """Convert WebM to WAV using ffmpeg"""
@@ -257,10 +298,21 @@ async def transcribe_audio(file: UploadFile = File(...), model: str = "base", la
         
         result = process_audio_with_whisper(audio_path, language)
         
+        # Save transcription to JSON file
+        transcribed_text = result["text"].strip()
+        detected_language = result.get("language", language)
+        audio_duration = result.get("duration", 0.0)
+        
+        save_stt_transcription(
+            text=transcribed_text,
+            language=detected_language,
+            duration=audio_duration
+        )
+        
         return TranscriptionResponse(
-            text=result["text"].strip(),
-            language=result.get("language", language),
-            duration=result.get("duration", 0.0)
+            text=transcribed_text,
+            language=detected_language,
+            duration=audio_duration
         )
         
     except HTTPException:
@@ -272,6 +324,18 @@ async def transcribe_audio(file: UploadFile = File(...), model: str = "base", la
             os.unlink(temp_input_path)
         if temp_wav_path and os.path.exists(temp_wav_path):
             os.unlink(temp_wav_path)
+
+@app.get("/stt/transcriptions")
+async def get_stt_transcriptions():
+    """Get all saved STT transcriptions"""
+    try:
+        transcriptions = load_stt_data()
+        return {
+            "count": len(transcriptions),
+            "transcriptions": transcriptions
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load transcriptions: {str(e)}")
 
 @app.post("/stt/transcribe-base64")
 async def transcribe_audio_base64(audio_data: dict):
