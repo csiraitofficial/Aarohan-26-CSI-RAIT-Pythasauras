@@ -35,13 +35,21 @@ export function AppShell({ title, children }: Props) {
         {/* Desktop sidebar — hidden on mobile */}
         <aside className="hidden lg:block w-56 shrink-0 lg:w-64">
           <div className="sticky top-6 rounded-2xl bg-white/80 p-4 shadow-sm ring-1 ring-zinc-200/80 backdrop-blur-md border border-white/50">
-            <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-glow-sm overflow-hidden ring-1 ring-white/40">
-                <img src={aiCoachAvatarSrc} alt="" className="h-full w-full object-cover" decoding="async" />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-glow-sm overflow-hidden ring-1 ring-white/40">
+                  <img src={aiCoachAvatarSrc} alt="" className="h-full w-full object-cover" decoding="async" />
+                </div>
+                <div className="min-w-0 leading-tight">
+                  <div className="text-sm font-semibold truncate">ACE REBO</div>
+                  <div className="text-xs text-zinc-500 truncate">{displayName}</div>
+                </div>
               </div>
-              <div className="min-w-0 leading-tight">
-                <div className="text-sm font-semibold truncate">Interview Coach</div>
-                <div className="text-xs text-zinc-500">{displayName}</div>
+              <div className="shrink-0 hidden xl:block">
+                <div className="text-[10px] font-black tracking-[0.22em] text-zinc-800 leading-none text-right">
+                  <div>ACE</div>
+                  <div>REBO</div>
+                </div>
               </div>
             </div>
 
@@ -150,13 +158,13 @@ export function AppShell({ title, children }: Props) {
               transition={{ type: "spring", stiffness: 400, damping: 35 }}
             >
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white overflow-hidden ring-1 ring-white/40">
                     <img src={aiCoachAvatarSrc} alt="" className="h-full w-full object-cover" decoding="async" />
                   </div>
                   <div className="min-w-0 leading-tight">
-                    <div className="text-sm font-semibold truncate">Interview Coach</div>
-                    <div className="text-xs text-zinc-500">{displayName}</div>
+                    <div className="text-sm font-semibold truncate">ACE REBO</div>
+                    <div className="text-xs text-zinc-500 truncate">{displayName}</div>
                   </div>
                 </div>
                 <button
