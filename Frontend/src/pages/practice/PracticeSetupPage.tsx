@@ -59,6 +59,13 @@ export function PracticeSetupPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (perm === "granted" && previewOn && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(console.error);
+    }
+  }, [perm, previewOn]);
+
   async function requestDevices() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -144,22 +151,28 @@ export function PracticeSetupPage() {
               <div className="text-sm font-semibold text-zinc-700">Overview</div>
               
               <div className="mt-4 overflow-hidden rounded-2xl bg-zinc-900 ring-1 ring-zinc-200">
-                <div className="relative h-56 w-full bg-gradient-to-br from-zinc-800 to-zinc-900">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-lg font-semibold text-white/80">Camera Preview</div>
-                      <div className="mt-2 text-sm text-white/60">Your camera feed will appear here</div>
-                    </div>
+                {perm === "granted" && previewOn ? (
+                  <div className="relative h-56 w-full">
+                    <video ref={videoRef} className="h-56 w-full object-cover" autoPlay playsInline muted />
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-200 ring-1 ring-blue-500/25">
-                        <span className="h-2 w-2 rounded-full bg-blue-300 animate-pulse" aria-hidden />
-                        Preview Mode
+                ) : (
+                  <div className="relative h-56 w-full bg-gradient-to-br from-zinc-800 to-zinc-900">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-lg font-semibold text-white/80">Camera Preview</div>
+                        <div className="mt-2 text-sm text-white/60">Your camera feed will appear here</div>
+                      </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-4 py-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/15 px-3 py-1 text-xs font-semibold text-blue-200 ring-1 ring-blue-500/25">
+                          <span className="h-2 w-2 rounded-full bg-blue-300 animate-pulse" aria-hidden />
+                          Preview Mode
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <div className="mt-4 grid grid-cols-3 gap-3">
@@ -205,26 +218,23 @@ export function PracticeSetupPage() {
                 ) : null}
 
                 {perm === "granted" && previewOn ? (
-                  <div className="mt-4 overflow-hidden rounded-2xl bg-zinc-900 ring-1 ring-zinc-200">
-                    <video ref={videoRef} className="h-56 w-full object-cover" autoPlay playsInline muted />
-                    <div className="flex items-center justify-between gap-3 bg-black/40 px-4 py-3">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-emerald-500/25">
-                        <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" aria-hidden />
-                        Camera Active
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          streamRef.current?.getTracks().forEach((t) => t.stop());
-                          streamRef.current = null;
-                          setPerm("prompt");
-                          setPreviewOn(false);
-                        }}
-                        className="rounded-xl bg-white/10 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/15 hover:bg-white/15"
-                      >
-                        Disable
-                      </button>
+                  <div className="mt-4">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-yellow-500/15 px-3 py-1 text-xs font-semibold text-yellow-200 ring-1 ring-yellow-500/25">
+                      <span className="h-2 w-2 rounded-full bg-yellow-300 animate-pulse" aria-hidden />
+                      Camera Active
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        streamRef.current?.getTracks().forEach((t) => t.stop());
+                        streamRef.current = null;
+                        setPerm("prompt");
+                        setPreviewOn(false);
+                      }}
+                      className="ml-3 rounded-xl bg-white/10 px-3 py-2 text-xs font-semibold text-white ring-1 ring-white/15 hover:bg-white/15"
+                    >
+                      Disable
+                    </button>
                   </div>
                 ) : null}
 
