@@ -8,7 +8,7 @@
       "What is your approach to writing maintainable code in a large codebase?"
     ],
     "web-developer": [
-      "What happens when you type a URL in the browser and press Enter?",
+      "What happens when you type a URL in browser and press Enter?",
       "How do you manage state in a React application and when do you choose each approach?",
       "Explain CORS and how you would debug a CORS issue.",
       "How would you design an authentication flow for a SPA with a backend API?",
@@ -17,7 +17,7 @@
     "ui-ux-designer": [
       "Walk me through your design process from discovery to handoff.",
       "How do you validate design decisions with users and stakeholders?",
-      "Explain a design system you’ve contributed to. What components/tokens did it include?",
+      "Explain a design system you've contributed to. What components/tokens did it include?",
       "How do you handle conflicting feedback from different stakeholders?",
       "Describe a UX problem you identified using data. What did you change?"
     ],
@@ -38,7 +38,7 @@
     "data-scientist": [
       "Describe a machine learning project you shipped. How did you measure success?",
       "How do you handle missing data and outliers during preprocessing?",
-      "Explain overfitting and the techniques you use to prevent it.",
+      "Explain overfitting and techniques you use to prevent it.",
       "How do you communicate results to non-technical stakeholders?",
       "Tell me about a time a model performed poorly in production. What did you do?"
     ],
