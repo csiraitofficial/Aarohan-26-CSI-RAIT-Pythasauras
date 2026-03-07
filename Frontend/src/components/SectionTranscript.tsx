@@ -1,26 +1,14 @@
-  import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
 type Props = {
   title?: string;
-<<<<<<< HEAD
   questions: string[];
-  onNextQuestion?: () => void;
 };
 
-export function SectionTranscript({ title = "Section transcript", questions, onNextQuestion }: Props) {
-=======
-  category: string;
-  sectionId: string;
-};
-
-export function SectionTranscript({ title = "Section transcript", category, sectionId }: Props) {
->>>>>>> 856ef0f90e3e904ca8c4d5c370fa69b141ddcd00
+export function SectionTranscript({ title = "Section transcript", questions }: Props) {
   const [index, setIndex] = useState(0);
-  const [questions, setQuestions] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastAudioUrlRef = useRef<string | null>(null);
   const [ttsLoading, setTtsLoading] = useState(false);
@@ -33,49 +21,18 @@ export function SectionTranscript({ title = "Section transcript", category, sect
   const [sttError, setSttError] = useState<string | null>(null);
   const [realTimeText, setRealTimeText] = useState<string>("");
   const [isRealTimeActive, setIsRealTimeActive] = useState(false);
+  const isRealTimeActiveRef = useRef(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const realTimeIntervalRef = useRef<number | null>(null);
 
-  // Fetch questions from backend
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        console.log('Fetching questions for:', { category, sectionId });
-        const baseUrl = ""; // Use proxy configuration
-        const url = `${baseUrl}/questions/${category}/${sectionId}`;
-        console.log('Fetching from URL:', url);
-        
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-        });
+    isRealTimeActiveRef.current = isRealTimeActive;
+  }, [isRealTimeActive]);
 
-        console.log('Response status:', res.status);
-
-        if (!res.ok) {
-          const text = await res.text().catch(() => "");
-          console.error('Error response:', text);
-          throw new Error(text || `Failed to fetch questions (${res.status})`);
-        }
-
-        const data = await res.json();
-        console.log('Received data:', data);
-        setQuestions(data.questions || []);
-        setIndex(0);
-      } catch (e) {
-        console.error('Fetch error:', e);
-        setError(e instanceof Error ? e.message : "Failed to load questions");
-        setQuestions([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchQuestions();
-  }, [category, sectionId]);
+  useEffect(() => {
+    setIndex(0);
+  }, [questions]);
 
   const total = questions.length;
   const current = useMemo(() => {
@@ -85,12 +42,6 @@ export function SectionTranscript({ title = "Section transcript", category, sect
 
   const canNext = total > 0 && index < total - 1;
   const canRestart = total > 0 && index !== 0;
-
-  const handleNext = useCallback(() => {
-    if (!canNext) return;
-    setIndex((i) => Math.min(total - 1, i + 1));
-    onNextQuestion?.();
-  }, [canNext, total, onNextQuestion]);
 
   const playTts = useCallback(async () => {
     if (!current) return;
@@ -238,7 +189,7 @@ export function SectionTranscript({ title = "Section transcript", category, sect
       const MAX_BUFFER_SIZE = 6; // Keep last 6 chunks (3 seconds of audio)
       
       mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0 && isRealTimeActive) {
+        if (event.data.size > 0 && isRealTimeActiveRef.current) {
           audioBuffer.push(event.data);
           console.log('📦 Audio chunk added to buffer, total chunks:', audioBuffer.length);
           
@@ -252,7 +203,7 @@ export function SectionTranscript({ title = "Section transcript", category, sect
 
       // Process accumulated audio more frequently
       transcriptionInterval = window.setInterval(async () => {
-        if (audioBuffer.length >= 2 && isRealTimeActive) { // Need at least 2 chunks for meaningful audio
+        if (audioBuffer.length >= 2 && isRealTimeActiveRef.current) { // Need at least 2 chunks for meaningful audio
           try {
             console.log('🔄 Processing audio chunks with sliding window...');
             console.log(`📊 Buffer stats: ${audioBuffer.length} chunks, total size: ${audioBuffer.reduce((acc, chunk) => acc + chunk.size, 0)} bytes`);
@@ -324,7 +275,7 @@ export function SectionTranscript({ title = "Section transcript", category, sect
             console.error('🚨 Error details:', errorMessage);
             setSttError(errorMessage);
           }
-        } else if (audioBuffer.length < 2 && isRealTimeActive) {
+        } else if (audioBuffer.length < 2 && isRealTimeActiveRef.current) {
           console.log('⏳ Waiting for more audio chunks...', audioBuffer.length);
         }
       }, CHUNK_PROCESSING_INTERVAL);
@@ -356,6 +307,7 @@ export function SectionTranscript({ title = "Section transcript", category, sect
   const stopRealTimeSTT = useCallback(() => {
     console.log('🛑 Stopping real-time STT...');
     if (mediaRecorderRef.current && isRealTimeActive) {
+      isRealTimeActiveRef.current = false;
       mediaRecorderRef.current.stop();
       setIsRealTimeActive(false);
       
@@ -384,50 +336,21 @@ export function SectionTranscript({ title = "Section transcript", category, sect
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4">
-        {loading ? (
-          <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4">
-            <div className="text-center text-sm text-violet-700">Loading questions...</div>
-          </div>
-        ) : error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
-            <div className="text-center text-sm text-red-700">Error: {error}</div>
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="text-xs font-semibold text-violet-700">Question</div>
-                <div className="mt-2 text-sm text-violet-900">
-                  {current ?? "No questions available for this section."}
-                </div>
+        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-xs font-semibold text-violet-700">Question</div>
+              <div className="mt-2 text-sm text-violet-900">
+                {current ?? "No questions available for this section."}
               </div>
-              {total > 0 ? (
-                <div className="shrink-0 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-zinc-700 ring-1 ring-zinc-200">
-                  {Math.min(total, index + 1)} / {total}
-                </div>
-              ) : null}
             </div>
-
-            <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
-              <Button variant="ghost" size="sm" disabled={!current || ttsLoading} onClick={playTts}>
-                {ttsLoading ? "Speaking..." : "Replay"}
-              </Button>
-              <Button variant="secondary" size="sm" disabled={!canRestart} onClick={() => setIndex(0)}>
-                Restart
-              </Button>
-              <Button variant="primary" size="sm" disabled={!canNext} onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}>
-                Next
-              </Button>
-            </div>
-
-            {ttsError ? (
-              <div className="mt-3 text-xs font-semibold text-zinc-600">{ttsError}</div>
+            {total > 0 ? (
+              <div className="shrink-0 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-zinc-700 ring-1 ring-zinc-200">
+                {Math.min(total, index + 1)} / {total}
+              </div>
             ) : null}
           </div>
-        )}
-      </div>
 
-<<<<<<< HEAD
           <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
             <Button variant="ghost" size="sm" disabled={!current || ttsLoading} onClick={playTts}>
               {ttsLoading ? "Speaking..." : "Replay"}
@@ -435,10 +358,15 @@ export function SectionTranscript({ title = "Section transcript", category, sect
             <Button variant="secondary" size="sm" disabled={!canRestart} onClick={() => setIndex(0)}>
               Restart
             </Button>
-            <Button variant="primary" size="sm" disabled={!canNext} onClick={handleNext}>
+            <Button variant="primary" size="sm" disabled={!canNext} onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}>
               Next
             </Button>
-=======
+          </div>
+
+          {ttsError ? <div className="mt-3 text-xs font-semibold text-zinc-600">{ttsError}</div> : null}
+        </div>
+      </div>
+
       {/* STT Test Component */}
       <div className="mt-6">
         <Card variant="glass" className="p-5">
@@ -520,12 +448,11 @@ export function SectionTranscript({ title = "Section transcript", category, sect
             {/* Instructions */}
             {!realTimeText && !transcribedText && !sttLoading && !isRecording && !isRealTimeActive && (
               <div className="text-xs text-zinc-500 space-y-1">
-                <div>� <strong>Real-time:</strong> Click "Start Real-time" for continuous transcription as you speak</div>
+                <div>- <strong>Real-time:</strong> Click "Start Real-time" for continuous transcription as you speak</div>
                 <div>🎤 <strong>Traditional:</strong> Click "Record & Transcribe" to record then transcribe</div>
                 <div>💡 Real-time provides immediate feedback, traditional gives more accurate results</div>
               </div>
             )}
->>>>>>> 856ef0f90e3e904ca8c4d5c370fa69b141ddcd00
           </div>
         </Card>
       </div>

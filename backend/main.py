@@ -20,7 +20,9 @@ load_dotenv()
 # Load questions from JSON file
 def load_questions_database():
     try:
-        with open('questionDatabase.json', 'r', encoding='utf-8') as f:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(base_dir, 'questionDatabase.json')
+        with open(db_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
         print("Warning: questionDatabase.json not found, using default questions")
@@ -185,7 +187,7 @@ async def get_questions(category: str, section_id: str):
     
     section_data = QUESTIONS_DATABASE[category][section_id]
     
-    # Handle the new enhanced structure for app-developer
+    # Handle enhanced structure (interview questions + optional learning resources)
     if isinstance(section_data, dict) and "interview-questions" in section_data:
         return {
             "category": category,
@@ -203,6 +205,33 @@ async def get_questions(category: str, section_id: str):
         "section_id": section_id,
         "questions": questions,
         "total_questions": len(questions)
+    }
+
+
+@app.get("/learning/job-interview/{section_id}")
+async def get_learning_resources_for_job_domain(section_id: str):
+    """Get learning resources (video + text) for a job domain inside job-interview category."""
+    category = "job-interview"
+    if category not in QUESTIONS_DATABASE:
+        raise HTTPException(status_code=404, detail=f"Category '{category}' not found")
+
+    if section_id not in QUESTIONS_DATABASE[category]:
+        raise HTTPException(status_code=404, detail=f"Section '{section_id}' not found in category '{category}'")
+
+    section_data = QUESTIONS_DATABASE[category][section_id]
+    if not (isinstance(section_data, dict) and "interview-questions" in section_data):
+        return {
+            "category": category,
+            "section_id": section_id,
+            "video_resources": [],
+            "text_resources": []
+        }
+
+    return {
+        "category": category,
+        "section_id": section_id,
+        "video_resources": section_data.get("video-resources", []),
+        "text_resources": section_data.get("text-resources", [])
     }
 
 @app.get("/questions/{category}/{section_id}")

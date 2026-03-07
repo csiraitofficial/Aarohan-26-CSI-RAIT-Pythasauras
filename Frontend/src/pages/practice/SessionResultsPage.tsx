@@ -216,6 +216,61 @@ export function SessionResultsPage() {
 
         <motion.section variants={reducedMotion ? undefined : staggerItem}>
           <Card variant="glass" className="p-5">
+            <div className="text-sm font-semibold text-zinc-700">Continue Learning</div>
+            <div className="mt-4 space-y-4">
+              {topic?.videoLectureUrl || topic?.textualInfoUrl ? (
+                <>
+                  <div className="text-xs text-zinc-600">Enhance your skills with these curated resources for {topic?.title || session.topic}:</div>
+                  <div className="flex flex-wrap gap-3">
+                    {topic?.videoLectureUrl && (
+                      <Button
+                        variant="primary"
+                        size="md"
+                        onClick={() => window.open(topic.videoLectureUrl, "_blank", "noopener,noreferrer")}
+                        className="flex items-center gap-2"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        View Video Lectures
+                      </Button>
+                    )}
+                    {topic?.textualInfoUrl && (
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={() => window.open(topic.textualInfoUrl, "_blank", "noopener,noreferrer")}
+                        className="flex items-center gap-2"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        Read Textual Info
+                      </Button>
+                    )}
+                  </div>
+                  <div className="text-xs text-zinc-500">
+                    📺 Video lectures and 📚 reading materials available to deepen your understanding
+                  </div>
+                </>
+              ) : (
+                <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">
+                  <div className="text-sm font-semibold text-zinc-800">Learning Resources</div>
+                  <div className="mt-2 text-sm text-zinc-600">Specific resources for this topic will be available soon.</div>
+                  <div className="mt-3">
+                    <Button href="/learning" variant="ghost" size="sm">
+                      Explore Learning Hub →
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        </motion.section>
+
+        <motion.section variants={reducedMotion ? undefined : staggerItem}>
+          <Card variant="glass" className="p-5">
             <div className="text-sm font-semibold text-zinc-700">Total IQ Overview</div>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="rounded-2xl bg-white p-4 ring-1 ring-zinc-200">

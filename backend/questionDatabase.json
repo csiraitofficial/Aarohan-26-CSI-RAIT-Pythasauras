@@ -1,26 +1,77 @@
 {
   "job-interview": {
-    "software-engineer": [
-      "Walk me through a recent project you built end-to-end. What trade-offs did you make?",
-      "Explain the difference between a process and a thread. When would you choose each?",
-      "How would you design a URL shortener? Talk about data model, scale, and failure modes.",
-      "Describe a performance issue you debugged. What metrics did you use and what was the root cause?",
-      "What is your approach to writing maintainable code in a large codebase?"
-    ],
-    "web-developer": [
-      "What happens when you type a URL in browser and press Enter?",
-      "How do you manage state in a React application and when do you choose each approach?",
-      "Explain CORS and how you would debug a CORS issue.",
-      "How would you design an authentication flow for a SPA with a backend API?",
-      "Tell me about a time you improved page performance. What did you change?"
-    ],
-    "ui-ux-designer": [
-      "Walk me through your design process from discovery to handoff.",
-      "How do you validate design decisions with users and stakeholders?",
-      "Explain a design system you've contributed to. What components/tokens did it include?",
-      "How do you handle conflicting feedback from different stakeholders?",
-      "Describe a UX problem you identified using data. What did you change?"
-    ],
+    "software-engineer": {
+      "interview-questions": [
+        "Walk me through a recent project you built end-to-end. What trade-offs did you make?",
+        "Explain the difference between a process and a thread. When would you choose each?",
+        "How would you design a URL shortener? Talk about data model, scale, and failure modes.",
+        "Describe a performance issue you debugged. What metrics did you use and what was the root cause?",
+        "What is your approach to writing maintainable code in a large codebase?"
+      ],
+      "video-resources": [
+        {
+          "title": "Software Engineering Recommendation",
+          "url": "https://www.youtube.com/embed/Ln_LP7c23WM?si=l6BI1BdKXOocGjo-",
+          "description": "Curated software engineering learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "Introduction to Software Engineering",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/software-engineering/software-engineering-introduction-to-software-engineering/",
+          "content": null
+        }
+      ]
+    },
+    "web-developer": {
+      "interview-questions": [
+        "What happens when you type a URL in browser and press Enter?",
+        "How do you manage state in a React application and when do you choose each approach?",
+        "Explain CORS and how you would debug a CORS issue.",
+        "How would you design an authentication flow for a SPA with a backend API?",
+        "Tell me about a time you improved page performance. What did you change?"
+      ],
+      "video-resources": [
+        {
+          "title": "Web Development Recommendation",
+          "url": "https://www.youtube.com/embed/HcOc7P5BMi4?si=fVMmp58MEjQk0Zkn",
+          "description": "Curated web development learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "Web Technology",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/web-tech/web-technology/",
+          "content": null
+        }
+      ]
+    },
+    "ui-ux-designer": {
+      "interview-questions": [
+        "Walk me through your design process from discovery to handoff.",
+        "How do you validate design decisions with users and stakeholders?",
+        "Explain a design system you've contributed to. What components/tokens did it include?",
+        "How do you handle conflicting feedback from different stakeholders?",
+        "Describe a UX problem you identified using data. What did you change?"
+      ],
+      "video-resources": [
+        {
+          "title": "UI/UX Design Recommendation",
+          "url": "https://www.youtube.com/embed/n9PAowQbua0?si=5i177Kx5wjd-JTAR",
+          "description": "Curated UI/UX learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "100 Days of UI/UX",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/blogs/100-days-of-ui-ux/",
+          "content": null
+        }
+      ]
+    },
     "app-developer": {
       "interview-questions": [
         "How do you approach offline-first behavior in a mobile app?",
@@ -31,14 +82,9 @@
       ],
       "video-resources": [
         {
-          "title": "Mobile App Development Introduction",
+          "title": "App Development Recommendation",
           "url": "https://www.youtube.com/embed/-foyVzTOf8o?si=cUebXbRY2DFXaDtr",
-          "description": "Complete guide to mobile app development fundamentals"
-        },
-        {
-          "title": "Advanced Mobile Development Techniques",
-          "url": "https://www.youtube.com/embed/n5CQK1knRko?si=Y2zOHjpOwU6CM7CG",
-          "description": "Professional mobile app development best practices"
+          "description": "Curated app development learning video"
         }
       ],
       "text-resources": [
@@ -111,41 +157,126 @@
         }
       ]
     },
-    "devops-engineer": [
-      "Explain a CI/CD pipeline you designed. What were the key stages and why?",
-      "How do you monitor a production system and define useful alerts?",
-      "What is Infrastructure as Code and how do you manage drift?",
-      "Walk through how you would handle a production incident (on-call scenario).",
-      "How do you secure secrets across environments and deployments?"
-    ],
-    "data-scientist": [
-      "Describe a machine learning project you shipped. How did you measure success?",
-      "How do you handle missing data and outliers during preprocessing?",
-      "Explain overfitting and techniques you use to prevent it.",
-      "How do you communicate results to non-technical stakeholders?",
-      "Tell me about a time a model performed poorly in production. What did you do?"
-    ],
-    "product-manager": [
-      "How do you decide what to build next when you have competing priorities?",
-      "Describe how you write user stories and define acceptance criteria.",
-      "How do you measure product success and choose metrics that matter?",
-      "Tell me about a product decision you reversed after learning new information.",
-      "How do you align engineering, design, and business stakeholders?"
-    ],
-    "marketing-specialist": [
-      "How do you plan and evaluate a marketing campaign end-to-end?",
-      "What metrics do you track for performance marketing and why?",
-      "How do you define and test messaging and positioning?",
-      "Describe a time you improved conversion rate. What experiments did you run?",
-      "How do you segment audiences and personalize communication?"
-    ],
-    "hr-recruiter": [
-      "Walk me through how you screen candidates for both skills and culture add.",
-      "How do you structure behavioral interviews to reduce bias?",
-      "Describe how you work with hiring managers to define a strong role profile.",
-      "How do you handle a candidate who negotiates aggressively?",
-      "Tell me about a difficult hiring decision you had to make and how you made it."
-    ]
+    "devops-engineer": {
+      "interview-questions": [
+        "Explain a CI/CD pipeline you designed. What were the key stages and why?",
+        "How do you monitor a production system and define useful alerts?",
+        "What is Infrastructure as Code and how do you manage drift?",
+        "Walk through how you would handle a production incident (on-call scenario).",
+        "How do you secure secrets across environments and deployments?"
+      ],
+      "video-resources": [
+        {
+          "title": "DevOps Recommendation",
+          "url": "https://www.youtube.com/embed/eHVVSQ7sOJ0?si=4Zoq4gFidwdAh8sl",
+          "description": "Curated DevOps learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "DevOps Tutorial",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/devops/devops-tutorial/",
+          "content": null
+        }
+      ]
+    },
+    "data-scientist": {
+      "interview-questions": [
+        "Describe a machine learning project you shipped. How did you measure success?",
+        "How do you handle missing data and outliers during preprocessing?",
+        "Explain overfitting and techniques you use to prevent it.",
+        "How do you communicate results to non-technical stakeholders?",
+        "Tell me about a time a model performed poorly in production. What did you do?"
+      ],
+      "video-resources": [
+        {
+          "title": "Data Science Recommendation",
+          "url": "https://www.youtube.com/embed/9YSjaKJ6R8I?si=bPVO-xIAVeHF5oW2",
+          "description": "Curated data science learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "Data Science Live",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/courses/data-science-live",
+          "content": null
+        }
+      ]
+    },
+    "product-manager": {
+      "interview-questions": [
+        "How do you decide what to build next when you have competing priorities?",
+        "Describe how you write user stories and define acceptance criteria.",
+        "How do you measure product success and choose metrics that matter?",
+        "Tell me about a product decision you reversed after learning new information.",
+        "How do you align engineering, design, and business stakeholders?"
+      ],
+      "video-resources": [
+        {
+          "title": "Product Manager Recommendation",
+          "url": "https://www.youtube.com/embed/BRlzbDry6Ew?si=RFLKif2T512ABUct",
+          "description": "Curated product management learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "What is Product Manager?",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/product-management/what-is-product-manager/",
+          "content": null
+        }
+      ]
+    },
+    "marketing-specialist": {
+      "interview-questions": [
+        "How do you plan and evaluate a marketing campaign end-to-end?",
+        "What metrics do you track for performance marketing and why?",
+        "How do you define and test messaging and positioning?",
+        "Describe a time you improved conversion rate. What experiments did you run?",
+        "How do you segment audiences and personalize communication?"
+      ],
+      "video-resources": [
+        {
+          "title": "Digital Marketing Recommendation",
+          "url": "https://www.youtube.com/embed/mrvlmYf_h_U?si=KEQUU797okZlySX1",
+          "description": "Curated digital marketing learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "What is Digital Marketing?",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/blogs/what-is-digital-marketing/",
+          "content": null
+        }
+      ]
+    },
+    "hr-recruiter": {
+      "interview-questions": [
+        "Walk me through how you screen candidates for both skills and culture add.",
+        "How do you structure behavioral interviews to reduce bias?",
+        "Describe how you work with hiring managers to define a strong role profile.",
+        "How do you handle a candidate who negotiates aggressively?",
+        "Tell me about a difficult hiring decision you had to make and how you made it."
+      ],
+      "video-resources": [
+        {
+          "title": "HR Recommendation",
+          "url": "https://www.youtube.com/embed/vXto6SnO4UU?si=QvFM8TQn2vSxcxne",
+          "description": "Curated HR learning video"
+        }
+      ],
+      "text-resources": [
+        {
+          "title": "What is Recruitment and Selection?",
+          "source": "GeeksforGeeks",
+          "url": "https://www.geeksforgeeks.org/software-engineering/what-is-recruitment-and-selection/",
+          "content": null
+        }
+      ]
+    }
   },
   "skill-development": {
     "behavioral-upskilling": [

@@ -110,31 +110,48 @@ export function ActivePracticeSession() {
     return getTopic(session.category, session.topic);
   }, [session]);
 
-  const [questionDb, setQuestionDb] = useState<Record<string, Record<string, string[]>> | null>(null);
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [questionsLoading, setQuestionsLoading] = useState(false);
+  const [questionsError, setQuestionsError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!session) return;
     let cancelled = false;
-    fetch("/questionDatabase.json")
-      .then((r) => r.json())
-      .then((data) => {
+
+    (async () => {
+      try {
+        setQuestionsLoading(true);
+        setQuestionsError(null);
+
+        const res = await fetch(`/questions/${session.category}/${session.topic}`,
+          {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+          }
+        );
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(text || `Failed to fetch questions (${res.status})`);
+        }
+
+        const data = (await res.json()) as { questions?: string[] };
         if (cancelled) return;
-        setQuestionDb(data as Record<string, Record<string, string[]>>);
-      })
-      .catch(() => {
+        setQuestions(Array.isArray(data.questions) ? data.questions : []);
+      } catch (e) {
         if (cancelled) return;
-        setQuestionDb(null);
-      });
+        setQuestions([]);
+        setQuestionsError(e instanceof Error ? e.message : "Failed to load questions");
+      } finally {
+        if (cancelled) return;
+        setQuestionsLoading(false);
+      }
+    })();
+
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  const questions = useMemo(() => {
-    if (!session || !questionDb) return [] as string[];
-    const byCategory = questionDb[session.category];
-    if (!byCategory) return [] as string[];
-    return byCategory[session.topic] ?? [];
-  }, [questionDb, session]);
+  }, [session]);
 
   const onFocus = useCallback((p: number) => {
     setFocusPercent(p);
@@ -199,7 +216,13 @@ export function ActivePracticeSession() {
         </div>
         <div className="space-y-5 lg:col-span-7">
           <FocusMeter value={focusPercent} />
-          <SectionTranscript questions={questions} />
+          {questionsError ? (
+            <Card variant="glass" className="p-5">{questionsError}</Card>
+          ) : questionsLoading ? (
+            <Card variant="glass" className="p-5">Loading questions...</Card>
+          ) : (
+            <SectionTranscript questions={questions} />
+          )}
         </div>
       </div>
     </AppShell>

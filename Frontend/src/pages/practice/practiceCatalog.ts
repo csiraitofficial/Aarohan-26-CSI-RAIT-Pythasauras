@@ -11,6 +11,8 @@ export type JobInterviewTopic = {
   skills: string[];
   icon: string;
   color: string;
+  videoLectureUrl?: string;
+  textualInfoUrl?: string;
 };
 
 export type SkillDevelopmentTopic = {
@@ -22,6 +24,8 @@ export type SkillDevelopmentTopic = {
   benefits: string[];
   icon: string;
   color: string;
+  videoLectureUrl?: string;
+  textualInfoUrl?: string;
 };
 
 export const jobInterviewTopics: JobInterviewTopic[] = [
@@ -34,6 +38,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["Coding", "System Design", "Algorithms", "Problem Solving"],
     icon: "💻",
     color: "violet",
+    videoLectureUrl: "https://www.youtube.com/watch?v=Ln_LP7c23WM",
+    textualInfoUrl: "https://www.geeksforgeeks.org/software-engineering/software-engineering-introduction-to-software-engineering/",
   },
   {
     id: "web-developer",
@@ -44,6 +50,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["HTML/CSS", "JavaScript", "React", "Node.js"],
     icon: "🌐",
     color: "blue",
+    videoLectureUrl: "https://www.youtube.com/watch?v=HcOc7P5BMi4",
+    textualInfoUrl: "https://www.geeksforgeeks.org/web-tech/web-technology/",
   },
   {
     id: "ui-ux-designer",
@@ -54,6 +62,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["Design Systems", "User Research", "Prototyping", "Visual Design"],
     icon: "🎨",
     color: "pink",
+    videoLectureUrl: "https://www.youtube.com/watch?v=n9PAowQbua0",
+    textualInfoUrl: "https://www.geeksforgeeks.org/blogs/100-days-of-ui-ux/",
   },
   {
     id: "app-developer",
@@ -64,6 +74,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["React Native", "Flutter", "iOS", "Android"],
     icon: "📱",
     color: "green",
+    videoLectureUrl: "https://www.youtube.com/watch?v=-foyVzTOf8o",
+    textualInfoUrl: "https://www.geeksforgeeks.org/mobile-computing/what-is-mobile-app-development-process/",
   },
   {
     id: "devops-engineer",
@@ -74,6 +86,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["Docker", "Kubernetes", "AWS", "CI/CD"],
     icon: "⚙️",
     color: "orange",
+    videoLectureUrl: "https://www.youtube.com/watch?v=eHVVSQ7sOJ0",
+    textualInfoUrl: "https://www.geeksforgeeks.org/devops/devops-tutorial/",
   },
   {
     id: "data-scientist",
@@ -84,6 +98,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["Python", "Machine Learning", "Statistics", "Data Visualization"],
     icon: "📊",
     color: "purple",
+    videoLectureUrl: "https://www.youtube.com/watch?v=9YSjaKJ6R8I",
+    textualInfoUrl: "https://www.geeksforgeeks.org/courses/data-science-live",
   },
   {
     id: "product-manager",
@@ -94,6 +110,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["Strategy", "Analytics", "Communication", "Leadership"],
     icon: "📋",
     color: "indigo",
+    videoLectureUrl: "https://www.youtube.com/watch?v=BRlzbDry6Ew",
+    textualInfoUrl: "https://www.geeksforgeeks.org/product-management/what-is-product-manager/",
   },
   {
     id: "marketing-specialist",
@@ -104,6 +122,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["SEO", "Content Marketing", "Analytics", "Social Media"],
     icon: "📈",
     color: "emerald",
+    videoLectureUrl: "https://www.youtube.com/watch?v=mrvlmYf_h_U",
+    textualInfoUrl: "https://www.geeksforgeeks.org/blogs/what-is-digital-marketing/",
   },
   {
     id: "hr-recruiter",
@@ -114,6 +134,8 @@ export const jobInterviewTopics: JobInterviewTopic[] = [
     skills: ["Behavioral Questions", "Evaluation", "Communication", "Decision Making"],
     icon: "🧾",
     color: "rose",
+    videoLectureUrl: "https://www.youtube.com/watch?v=vXto6SnO4UU",
+    textualInfoUrl: "https://www.geeksforgeeks.org/software-engineering/what-is-recruitment-and-selection/",
   },
 ];
 
@@ -127,6 +149,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Better Team Collaboration", "Professional Etiquette", "Conflict Resolution"],
     icon: "🤝",
     color: "blue",
+    videoLectureUrl: "https://www.youtube.com/watch?v=K2Y3G8J6qJ8",
+    textualInfoUrl: "https://www.geeksforgeeks.org/soft-skills-for-professionals/",
   },
   {
     id: "presentation-skills",
@@ -137,6 +161,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Confident Speaking", "Engaging Delivery", "Visual Storytelling"],
     icon: "🎤",
     color: "purple",
+    videoLectureUrl: "https://www.youtube.com/watch?v=HAnw168huqA",
+    textualInfoUrl: "https://www.geeksforgeeks.org/presentation-skills/",
   },
   {
     id: "communication-boost",
@@ -147,6 +173,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Clear Expression", "Active Listening", "Body Language"],
     icon: "💬",
     color: "green",
+    videoLectureUrl: "https://www.youtube.com/watch?v=L7BwXh2qE8U",
+    textualInfoUrl: "https://www.geeksforgeeks.org/communication-skills/",
   },
   {
     id: "leadership-skills",
@@ -157,6 +185,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Team Motivation", "Strategic Thinking", "Decision Making"],
     icon: "👑",
     color: "amber",
+    videoLectureUrl: "https://www.youtube.com/watch?v=RvT4Ea0zJ9c",
+    textualInfoUrl: "https://www.geeksforgeeks.org/leadership-skills/",
   },
   {
     id: "negotiation-skills",
@@ -167,6 +197,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Win-Win Outcomes", "Persuasion", "Conflict Management"],
     icon: "🤝",
     color: "orange",
+    videoLectureUrl: "https://www.youtube.com/watch?v=4q1h5E9Z3kY",
+    textualInfoUrl: "https://www.geeksforgeeks.org/negotiation-skills/",
   },
   {
     id: "time-management",
@@ -177,6 +209,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Prioritization", "Focus Techniques", "Work-Life Balance"],
     icon: "⏰",
     color: "red",
+    videoLectureUrl: "https://www.youtube.com/watch?v=5k6e2kvlYcE",
+    textualInfoUrl: "https://www.geeksforgeeks.org/time-management-tips/",
   },
   {
     id: "stress-management",
@@ -187,6 +221,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Resilience", "Mindfulness", "Work-Life Balance"],
     icon: "🧘",
     color: "teal",
+    videoLectureUrl: "https://www.youtube.com/watch?v=2fM1Lr3jJp4",
+    textualInfoUrl: "https://www.geeksforgeeks.org/stress-management/",
   },
   {
     id: "networking-skills",
@@ -197,6 +233,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Relationship Building", "Professional Connections", "Opportunity Creation"],
     icon: "🌐",
     color: "cyan",
+    videoLectureUrl: "https://www.youtube.com/watch?v=4nBdK6N3Fq8",
+    textualInfoUrl: "https://www.geeksforgeeks.org/networking-skills/",
   },
   {
     id: "critical-thinking",
@@ -207,6 +245,8 @@ export const skillDevelopmentTopics: SkillDevelopmentTopic[] = [
     benefits: ["Clear Reasoning", "Better Decisions", "Stronger Arguments"],
     icon: "🧠",
     color: "violet",
+    videoLectureUrl: "https://www.youtube.com/watch?v=6OLPL5p0fMg",
+    textualInfoUrl: "https://www.geeksforgeeks.org/critical-thinking/",
   },
 ];
 
