@@ -12,6 +12,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      '/api/speech/ws': {
+        target: 'ws://127.0.0.1:8000',
+        changeOrigin: true,
+        ws: true,
+      },
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
@@ -25,6 +30,14 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/questions': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
+      '/sections': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
+      '/health': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       }

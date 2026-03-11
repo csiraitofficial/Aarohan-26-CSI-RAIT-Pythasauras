@@ -184,7 +184,6 @@ export function SectionTranscript({ title = "Section transcript", questions }: P
       
       // Use sliding window approach for audio chunks
       let audioBuffer: Blob[] = [];
-      let transcriptionInterval: number;
       const CHUNK_PROCESSING_INTERVAL = 1500; // Process every 1.5 seconds for better responsiveness
       const MAX_BUFFER_SIZE = 6; // Keep last 6 chunks (3 seconds of audio)
       
@@ -202,7 +201,7 @@ export function SectionTranscript({ title = "Section transcript", questions }: P
       };
 
       // Process accumulated audio more frequently
-      transcriptionInterval = window.setInterval(async () => {
+      realTimeIntervalRef.current = window.setInterval(async () => {
         if (audioBuffer.length >= 2 && isRealTimeActiveRef.current) { // Need at least 2 chunks for meaningful audio
           try {
             console.log('🔄 Processing audio chunks with sliding window...');

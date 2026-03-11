@@ -1,4 +1,7 @@
 .env
-.env.*
+.env.local
+.env.development
+.env.production
 backend/.env
 Frontend/.env
+!.env.example

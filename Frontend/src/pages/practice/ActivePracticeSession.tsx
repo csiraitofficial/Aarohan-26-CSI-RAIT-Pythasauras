@@ -161,9 +161,17 @@ export function ActivePracticeSession() {
     if (session?.microphoneEnabled) start();
     return () => {
       stop();
-      if (session) bumpProgress(session.category, session.topic);
+      if (session) {
+        bumpProgress(session.category, session.topic);
+        // Persist final session IQ data
+        writeSessionIQ(sessionId, {
+          ...sessionIQ,
+          timeSpent: Math.floor((Date.now() - sessionStartTime) / 1000)
+        });
+      }
     };
-  }, [session, start, stop]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.microphoneEnabled, session?.category, session?.topic]);
 
   if (!session) {
     return (
